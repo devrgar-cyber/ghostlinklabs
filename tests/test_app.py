@@ -1,4 +1,9 @@
 import json
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -47,3 +52,22 @@ def test_ipfs_store_and_retrieve():
     get_resp = client.get(f"/ipfs/{cid}")
     assert get_resp.status_code == 200
     assert get_resp.json()["data"] == "hello"
+
+
+def test_handoff_and_done_flow():
+    # Utterance mapping to SLEEP pack
+    utterance = "I feel very tired and can't sleep"
+    handoff_resp = client.post("/handoff", json={"text": utterance})
+    assert handoff_resp.status_code == 200
+    data = handoff_resp.json()
+    assert data["pack"] == "SLEEP"
+    assert data["deep_link"].startswith("solharmonics://run?pack=SLEEP")
+    assert data["fallback"].endswith("pack=SLEEP")
+
+    done_resp = client.post("/done", json={"pack": "SLEEP", "status": "complete", "utterance": utterance})
+    assert done_resp.status_code == 200
+    done_data = done_resp.json()
+    assert done_data["pack"] == "SLEEP"
+    assert "mirror" in done_data
+    assert "move" in done_data
+    assert done_data["move"].startswith("kill screens")
