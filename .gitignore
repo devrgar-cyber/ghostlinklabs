@@ -2,6 +2,11 @@
 *
 !ghostlink/
 !ghostlink/**
+!fastapi/
+!fastapi/**
+!pydantic/
+!pydantic/**
 !tests/
 !tests/**
 tests/__pycache__/
+**/__pycache__/
