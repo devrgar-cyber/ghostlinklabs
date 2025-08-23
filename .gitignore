@@ -4,4 +4,7 @@
 !ghostlink/**
 !tests/
 !tests/**
+!README.md
+!LICENSE
 tests/__pycache__/
+ghostlink/__pycache__/
