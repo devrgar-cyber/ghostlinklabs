@@ -1,0 +1,19 @@
+{
+  "memory": {
+    "persistence_file": "robbie_os_memory.json",
+    "max_entries": 10000
+  },
+  "seedgrid": {
+    "max_nodes": 100,
+    "heartbeat_interval": 5.0
+  },
+  "sentinel": {
+    "ethics_enabled": true,
+    "oversight_level": "strict"
+  },
+  "failure_detector": {
+    "learning_enabled": true,
+    "anomaly_threshold": 0.8,
+    "max_pattern_history": 1000
+  }
+}

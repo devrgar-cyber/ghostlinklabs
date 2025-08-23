@@ -2,31 +2,29 @@ import datetime
 import pytest
 from fastapi.testclient import TestClient
 
-from ghostlink.main import app, set_db
+from ghostlink.main import app, set_db, get_db
 from ghostlink.database import Database, ApiKey
 
 
-@pytest.fixture(scope="session", autouse=True)
-def setup_global_test_database():
-    """Setup a global test database for the entire test session."""
-    # Create test database and set it
-    test_db = Database("sqlite:///:memory:")
-    set_db(test_db)
-
-
 @pytest.fixture(autouse=True)
-def clear_test_data():
-    """Clear test data before each test."""
-    # Clear application state
+def setup_test_database():
+    """Setup a test database for each test."""
     from ghostlink import main
+    # Clear application state
     main.items.clear()
     main.ipfs.storage.clear()
     
-    # Clear database data
-    db = main.get_db()
-    with db.get_session() as session:
-        session.query(ApiKey).delete()
-        session.commit()
+    # Create test database and set it
+    test_db = Database("sqlite:///:memory:")
+    set_db(test_db)
+    
+    # Override the FastAPI dependency
+    app.dependency_overrides[get_db] = lambda: test_db
+    
+    yield test_db
+    
+    # Clean up
+    app.dependency_overrides.clear()
 
 
 client = TestClient(app)

@@ -1,0 +1,2 @@
+# Robbie OS Requirements
+# Core dependencies for the Robbie OS system
