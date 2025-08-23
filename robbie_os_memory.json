@@ -2,7 +2,7 @@
   "system_state": {
     "test_key": {
       "value": "test_value",
-      "timestamp": "2025-08-23T18:38:55.592901",
+      "timestamp": "2025-08-23T18:40:19.634144",
       "type": "str"
     }
   },
@@ -33,6 +33,34 @@
       "command": "seedgrid nodes",
       "result_type": "list",
       "execution_time": 9.584426879882812e-05,
+      "success": true
+    },
+    {
+      "timestamp": "2025-08-23T18:40:19.634081",
+      "command": "echo Hello from Robbie OS",
+      "result_type": "str",
+      "execution_time": 2.4318695068359375e-05,
+      "success": true
+    },
+    {
+      "timestamp": "2025-08-23T18:40:19.634156",
+      "command": "memory set test_key=test_value",
+      "result_type": "NoneType",
+      "execution_time": 3.7670135498046875e-05,
+      "success": true
+    },
+    {
+      "timestamp": "2025-08-23T18:40:19.634177",
+      "command": "memory get test_key",
+      "result_type": "str",
+      "execution_time": 1.2159347534179688e-05,
+      "success": true
+    },
+    {
+      "timestamp": "2025-08-23T18:40:19.634293",
+      "command": "seedgrid nodes",
+      "result_type": "list",
+      "execution_time": 9.512901306152344e-05,
       "success": true
     }
   ],
