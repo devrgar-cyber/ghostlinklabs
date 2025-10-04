@@ -1,12 +1,7 @@
 """SPINE component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+SPINE = component_factory("SPINE", "core")
 
-def SPINE() -> dict[str, object]:
-    """Return the SPINE component description."""
-    return create_component(
-        "SPINE",
-        "core",
-    )

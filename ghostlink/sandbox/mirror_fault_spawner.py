@@ -1,12 +1,7 @@
 """MIRROR_FAULT_SPAWNER component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+MIRROR_FAULT_SPAWNER = component_factory("MIRROR_FAULT_SPAWNER", "sandbox")
 
-def MIRROR_FAULT_SPAWNER() -> dict[str, object]:
-    """Return the MIRROR_FAULT_SPAWNER component description."""
-    return create_component(
-        "MIRROR_FAULT_SPAWNER",
-        "sandbox",
-    )

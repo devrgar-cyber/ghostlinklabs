@@ -3,12 +3,14 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
+import sys
 from typing import Any, TypedDict, cast
 
 __all__ = [
     "ComponentDict",
     "ComponentFactory",
     "ComponentValidationError",
+    "component_factory",
     "automatic_purpose",
     "create_component",
     "define_component",
@@ -134,6 +136,36 @@ def create_component(
         outputs=outputs,
         metadata=metadata,
     )
+
+
+def component_factory(
+    name: str,
+    layer: str,
+    *,
+    purpose: str | None = None,
+    inputs: Iterable[str] | None = None,
+    outputs: Iterable[str] | None = None,
+    metadata: Mapping[str, Any] | None = None,
+) -> ComponentFactory:
+    """Return a zero-argument factory that yields the requested component."""
+
+    module_name = sys._getframe(1).f_globals.get("__name__", __name__)
+
+    def factory() -> ComponentDict:
+        return create_component(
+            name,
+            layer,
+            purpose=purpose,
+            inputs=inputs,
+            outputs=outputs,
+            metadata=metadata,
+        )
+
+    factory.__name__ = name
+    factory.__qualname__ = name
+    factory.__doc__ = f"Return the {name} component description."
+    factory.__module__ = module_name
+    return factory
 
 
 def _require(component: Mapping[str, Any], key: str) -> Any:

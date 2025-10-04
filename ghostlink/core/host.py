@@ -1,12 +1,7 @@
 """HOST component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+HOST = component_factory("HOST", "core")
 
-def HOST() -> dict[str, object]:
-    """Return the HOST component description."""
-    return create_component(
-        "HOST",
-        "core",
-    )

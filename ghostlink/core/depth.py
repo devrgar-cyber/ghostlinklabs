@@ -1,12 +1,7 @@
 """DEPTH component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+DEPTH = component_factory("DEPTH", "core")
 
-def DEPTH() -> dict[str, object]:
-    """Return the DEPTH component description."""
-    return create_component(
-        "DEPTH",
-        "core",
-    )

@@ -1,12 +1,7 @@
 """DAEMON_SIGNAL_LISTENER component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+DAEMON_SIGNAL_LISTENER = component_factory("DAEMON_SIGNAL_LISTENER", "daemon")
 
-def DAEMON_SIGNAL_LISTENER() -> dict[str, object]:
-    """Return the DAEMON_SIGNAL_LISTENER component description."""
-    return create_component(
-        "DAEMON_SIGNAL_LISTENER",
-        "daemon",
-    )

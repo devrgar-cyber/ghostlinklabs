@@ -1,12 +1,7 @@
 """TILE component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+TILE = component_factory("TILE", "core")
 
-def TILE() -> dict[str, object]:
-    """Return the TILE component description."""
-    return create_component(
-        "TILE",
-        "core",
-    )

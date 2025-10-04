@@ -1,12 +1,7 @@
 """SHADOW component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+SHADOW = component_factory("SHADOW", "core")
 
-def SHADOW() -> dict[str, object]:
-    """Return the SHADOW component description."""
-    return create_component(
-        "SHADOW",
-        "core",
-    )

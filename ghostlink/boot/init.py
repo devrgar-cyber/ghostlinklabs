@@ -1,12 +1,7 @@
 """INIT_GHOSTLINK component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+INIT_GHOSTLINK = component_factory("INIT_GHOSTLINK", "boot")
 
-def INIT_GHOSTLINK() -> dict[str, object]:
-    """Return the INIT_GHOSTLINK component description."""
-    return create_component(
-        "INIT_GHOSTLINK",
-        "boot",
-    )

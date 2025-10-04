@@ -1,12 +1,7 @@
 """ARCHIVE component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+ARCHIVE = component_factory("ARCHIVE", "core")
 
-def ARCHIVE() -> dict[str, object]:
-    """Return the ARCHIVE component description."""
-    return create_component(
-        "ARCHIVE",
-        "core",
-    )

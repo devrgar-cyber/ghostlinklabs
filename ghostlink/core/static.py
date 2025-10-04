@@ -1,12 +1,7 @@
 """STATIC component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+STATIC = component_factory("STATIC", "core")
 
-def STATIC() -> dict[str, object]:
-    """Return the STATIC component description."""
-    return create_component(
-        "STATIC",
-        "core",
-    )

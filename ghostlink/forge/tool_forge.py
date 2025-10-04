@@ -1,12 +1,7 @@
 """TOOL_FORGE component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+TOOL_FORGE = component_factory("TOOL_FORGE", "forge")
 
-def TOOL_FORGE() -> dict[str, object]:
-    """Return the TOOL_FORGE component description."""
-    return create_component(
-        "TOOL_FORGE",
-        "forge",
-    )

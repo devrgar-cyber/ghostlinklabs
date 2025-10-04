@@ -1,12 +1,7 @@
 """SUBJECTIVE_TRACE_HARNESS component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+SUBJECTIVE_TRACE_HARNESS = component_factory("SUBJECTIVE_TRACE_HARNESS", "observer")
 
-def SUBJECTIVE_TRACE_HARNESS() -> dict[str, object]:
-    """Return the SUBJECTIVE_TRACE_HARNESS component description."""
-    return create_component(
-        "SUBJECTIVE_TRACE_HARNESS",
-        "observer",
-    )

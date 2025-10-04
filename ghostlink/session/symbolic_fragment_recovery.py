@@ -1,12 +1,7 @@
 """SYMBOLIC_FRAGMENT_RECOVERY component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+SYMBOLIC_FRAGMENT_RECOVERY = component_factory("SYMBOLIC_FRAGMENT_RECOVERY", "session")
 
-def SYMBOLIC_FRAGMENT_RECOVERY() -> dict[str, object]:
-    """Return the SYMBOLIC_FRAGMENT_RECOVERY component description."""
-    return create_component(
-        "SYMBOLIC_FRAGMENT_RECOVERY",
-        "session",
-    )

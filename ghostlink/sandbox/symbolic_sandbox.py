@@ -1,12 +1,7 @@
 """SYMBOLIC_SANDBOX component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+SYMBOLIC_SANDBOX = component_factory("SYMBOLIC_SANDBOX", "sandbox")
 
-def SYMBOLIC_SANDBOX() -> dict[str, object]:
-    """Return the SYMBOLIC_SANDBOX component description."""
-    return create_component(
-        "SYMBOLIC_SANDBOX",
-        "sandbox",
-    )

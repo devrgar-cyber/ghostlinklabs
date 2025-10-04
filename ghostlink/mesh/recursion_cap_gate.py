@@ -1,12 +1,7 @@
 """RECURSION_CAP_GATE component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+RECURSION_CAP_GATE = component_factory("RECURSION_CAP_GATE", "mesh")
 
-def RECURSION_CAP_GATE() -> dict[str, object]:
-    """Return the RECURSION_CAP_GATE component description."""
-    return create_component(
-        "RECURSION_CAP_GATE",
-        "mesh",
-    )

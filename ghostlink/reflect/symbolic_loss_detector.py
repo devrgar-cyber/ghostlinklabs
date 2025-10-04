@@ -1,12 +1,7 @@
 """SYMBOLIC_LOSS_DETECTOR component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+SYMBOLIC_LOSS_DETECTOR = component_factory("SYMBOLIC_LOSS_DETECTOR", "reflect")
 
-def SYMBOLIC_LOSS_DETECTOR() -> dict[str, object]:
-    """Return the SYMBOLIC_LOSS_DETECTOR component description."""
-    return create_component(
-        "SYMBOLIC_LOSS_DETECTOR",
-        "reflect",
-    )

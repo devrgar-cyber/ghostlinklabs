@@ -1,12 +1,7 @@
 """MEMORY_REGISTER component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+MEMORY_REGISTER = component_factory("MEMORY_REGISTER", "runtime")
 
-def MEMORY_REGISTER() -> dict[str, object]:
-    """Return the MEMORY_REGISTER component description."""
-    return create_component(
-        "MEMORY_REGISTER",
-        "runtime",
-    )

@@ -1,12 +1,7 @@
 """PHANTOM_TRACE_SCANNER component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+PHANTOM_TRACE_SCANNER = component_factory("PHANTOM_TRACE_SCANNER", "ghost")
 
-def PHANTOM_TRACE_SCANNER() -> dict[str, object]:
-    """Return the PHANTOM_TRACE_SCANNER component description."""
-    return create_component(
-        "PHANTOM_TRACE_SCANNER",
-        "ghost",
-    )

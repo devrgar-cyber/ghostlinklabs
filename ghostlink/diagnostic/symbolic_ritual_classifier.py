@@ -1,12 +1,7 @@
 """SYMBOLIC_RITUAL_CLASSIFIER component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+SYMBOLIC_RITUAL_CLASSIFIER = component_factory("SYMBOLIC_RITUAL_CLASSIFIER", "diagnostic")
 
-def SYMBOLIC_RITUAL_CLASSIFIER() -> dict[str, object]:
-    """Return the SYMBOLIC_RITUAL_CLASSIFIER component description."""
-    return create_component(
-        "SYMBOLIC_RITUAL_CLASSIFIER",
-        "diagnostic",
-    )

@@ -1,12 +1,7 @@
 """CURRENT component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+CURRENT = component_factory("CURRENT", "core")
 
-def CURRENT() -> dict[str, object]:
-    """Return the CURRENT component description."""
-    return create_component(
-        "CURRENT",
-        "core",
-    )

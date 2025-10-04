@@ -1,12 +1,7 @@
 """RECURSIVE_FAILURE_PROBE component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+RECURSIVE_FAILURE_PROBE = component_factory("RECURSIVE_FAILURE_PROBE", "sandbox")
 
-def RECURSIVE_FAILURE_PROBE() -> dict[str, object]:
-    """Return the RECURSIVE_FAILURE_PROBE component description."""
-    return create_component(
-        "RECURSIVE_FAILURE_PROBE",
-        "sandbox",
-    )

@@ -1,12 +1,7 @@
 """LATTICE_SYNC_DAEMON component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+LATTICE_SYNC_DAEMON = component_factory("LATTICE_SYNC_DAEMON", "net")
 
-def LATTICE_SYNC_DAEMON() -> dict[str, object]:
-    """Return the LATTICE_SYNC_DAEMON component description."""
-    return create_component(
-        "LATTICE_SYNC_DAEMON",
-        "net",
-    )

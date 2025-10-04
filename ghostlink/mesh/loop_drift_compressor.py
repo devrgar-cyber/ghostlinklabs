@@ -1,12 +1,7 @@
 """LOOP_DRIFT_COMPRESSOR component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+LOOP_DRIFT_COMPRESSOR = component_factory("LOOP_DRIFT_COMPRESSOR", "mesh")
 
-def LOOP_DRIFT_COMPRESSOR() -> dict[str, object]:
-    """Return the LOOP_DRIFT_COMPRESSOR component description."""
-    return create_component(
-        "LOOP_DRIFT_COMPRESSOR",
-        "mesh",
-    )

@@ -1,12 +1,7 @@
 """CONTAINER component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+CONTAINER = component_factory("CONTAINER", "core")
 
-def CONTAINER() -> dict[str, object]:
-    """Return the CONTAINER component description."""
-    return create_component(
-        "CONTAINER",
-        "core",
-    )

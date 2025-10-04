@@ -1,12 +1,7 @@
 """TUNNEL component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+TUNNEL = component_factory("TUNNEL", "core")
 
-def TUNNEL() -> dict[str, object]:
-    """Return the TUNNEL component description."""
-    return create_component(
-        "TUNNEL",
-        "core",
-    )

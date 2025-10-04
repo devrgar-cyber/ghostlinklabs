@@ -1,12 +1,7 @@
 """RESIDUAL_COMPRESSION_MAP component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+RESIDUAL_COMPRESSION_MAP = component_factory("RESIDUAL_COMPRESSION_MAP", "ghost")
 
-def RESIDUAL_COMPRESSION_MAP() -> dict[str, object]:
-    """Return the RESIDUAL_COMPRESSION_MAP component description."""
-    return create_component(
-        "RESIDUAL_COMPRESSION_MAP",
-        "ghost",
-    )

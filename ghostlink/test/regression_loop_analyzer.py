@@ -1,12 +1,7 @@
 """REGRESSION_LOOP_ANALYZER component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+REGRESSION_LOOP_ANALYZER = component_factory("REGRESSION_LOOP_ANALYZER", "test")
 
-def REGRESSION_LOOP_ANALYZER() -> dict[str, object]:
-    """Return the REGRESSION_LOOP_ANALYZER component description."""
-    return create_component(
-        "REGRESSION_LOOP_ANALYZER",
-        "test",
-    )

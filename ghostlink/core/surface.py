@@ -1,12 +1,7 @@
 """SURFACE component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+SURFACE = component_factory("SURFACE", "core")
 
-def SURFACE() -> dict[str, object]:
-    """Return the SURFACE component description."""
-    return create_component(
-        "SURFACE",
-        "core",
-    )

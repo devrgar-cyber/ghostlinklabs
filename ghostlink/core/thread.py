@@ -1,12 +1,7 @@
 """THREAD component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+THREAD = component_factory("THREAD", "core")
 
-def THREAD() -> dict[str, object]:
-    """Return the THREAD component description."""
-    return create_component(
-        "THREAD",
-        "core",
-    )

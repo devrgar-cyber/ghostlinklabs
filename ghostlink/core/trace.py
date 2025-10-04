@@ -1,12 +1,7 @@
 """TRACE component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+TRACE = component_factory("TRACE", "core")
 
-def TRACE() -> dict[str, object]:
-    """Return the TRACE component description."""
-    return create_component(
-        "TRACE",
-        "core",
-    )

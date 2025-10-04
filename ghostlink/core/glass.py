@@ -1,12 +1,7 @@
 """GLASS component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+GLASS = component_factory("GLASS", "core")
 
-def GLASS() -> dict[str, object]:
-    """Return the GLASS component description."""
-    return create_component(
-        "GLASS",
-        "core",
-    )

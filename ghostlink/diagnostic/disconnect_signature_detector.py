@@ -1,12 +1,7 @@
 """DISCONNECT_SIGNATURE_DETECTOR component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+DISCONNECT_SIGNATURE_DETECTOR = component_factory("DISCONNECT_SIGNATURE_DETECTOR", "diagnostic")
 
-def DISCONNECT_SIGNATURE_DETECTOR() -> dict[str, object]:
-    """Return the DISCONNECT_SIGNATURE_DETECTOR component description."""
-    return create_component(
-        "DISCONNECT_SIGNATURE_DETECTOR",
-        "diagnostic",
-    )

@@ -1,12 +1,7 @@
 """EXPAND_SYMBOLIC_LATTICE component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+EXPAND_SYMBOLIC_LATTICE = component_factory("EXPAND_SYMBOLIC_LATTICE", "mesh")
 
-def EXPAND_SYMBOLIC_LATTICE() -> dict[str, object]:
-    """Return the EXPAND_SYMBOLIC_LATTICE component description."""
-    return create_component(
-        "EXPAND_SYMBOLIC_LATTICE",
-        "mesh",
-    )

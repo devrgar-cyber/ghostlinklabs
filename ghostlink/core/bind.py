@@ -1,12 +1,7 @@
 """BIND component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+BIND = component_factory("BIND", "core")
 
-def BIND() -> dict[str, object]:
-    """Return the BIND component description."""
-    return create_component(
-        "BIND",
-        "core",
-    )

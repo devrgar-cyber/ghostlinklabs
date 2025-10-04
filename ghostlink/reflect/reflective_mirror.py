@@ -1,12 +1,7 @@
 """REFLECTIVE_MIRROR component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+REFLECTIVE_MIRROR = component_factory("REFLECTIVE_MIRROR", "reflect")
 
-def REFLECTIVE_MIRROR() -> dict[str, object]:
-    """Return the REFLECTIVE_MIRROR component description."""
-    return create_component(
-        "REFLECTIVE_MIRROR",
-        "reflect",
-    )

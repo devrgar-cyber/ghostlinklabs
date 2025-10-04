@@ -1,12 +1,7 @@
 """LATTICE_SELF_TEST component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+LATTICE_SELF_TEST = component_factory("LATTICE_SELF_TEST", "test")
 
-def LATTICE_SELF_TEST() -> dict[str, object]:
-    """Return the LATTICE_SELF_TEST component description."""
-    return create_component(
-        "LATTICE_SELF_TEST",
-        "test",
-    )

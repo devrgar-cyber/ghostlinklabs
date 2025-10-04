@@ -1,12 +1,7 @@
 """OVERCOMPRESSION_RESOLVER component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+OVERCOMPRESSION_RESOLVER = component_factory("OVERCOMPRESSION_RESOLVER", "reflect")
 
-def OVERCOMPRESSION_RESOLVER() -> dict[str, object]:
-    """Return the OVERCOMPRESSION_RESOLVER component description."""
-    return create_component(
-        "OVERCOMPRESSION_RESOLVER",
-        "reflect",
-    )

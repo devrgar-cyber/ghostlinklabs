@@ -1,12 +1,7 @@
 """PULSE component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+PULSE = component_factory("PULSE", "core")
 
-def PULSE() -> dict[str, object]:
-    """Return the PULSE component description."""
-    return create_component(
-        "PULSE",
-        "core",
-    )

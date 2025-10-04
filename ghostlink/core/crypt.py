@@ -1,12 +1,7 @@
 """CRYPT component module."""
 from __future__ import annotations
 
-from ..blueprint import create_component
+from ..blueprint import component_factory
 
+CRYPT = component_factory("CRYPT", "core")
 
-def CRYPT() -> dict[str, object]:
-    """Return the CRYPT component description."""
-    return create_component(
-        "CRYPT",
-        "core",
-    )
