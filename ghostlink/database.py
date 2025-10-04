@@ -1,9 +1,13 @@
+from __future__ import annotations
+
 import datetime
 import secrets
 from typing import Optional
-from sqlalchemy import create_engine, Column, Integer, String, DateTime
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session
+
+from sqlalchemy import Column, DateTime, Integer, String, create_engine
+from sqlalchemy.orm import Session, declarative_base, sessionmaker
+from sqlalchemy.pool import StaticPool
+
 from .config import config
 
 Base = declarative_base()
@@ -39,10 +43,17 @@ class ApiKey(Base):
 class Database:
     """Database manager for GhostLink."""
     
-    def __init__(self, database_url: str = None):
+    def __init__(self, database_url: str | None = None):
         if database_url is None:
             database_url = config.DATABASE_URL
-        self.engine = create_engine(database_url)
+
+        engine_options: dict[str, object] = {}
+        if database_url.startswith("sqlite"):
+            engine_options["connect_args"] = {"check_same_thread": False}
+            if database_url == "sqlite:///:memory:":
+                engine_options["poolclass"] = StaticPool
+
+        self.engine = create_engine(database_url, **engine_options)
         self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
         Base.metadata.create_all(bind=self.engine)
     
