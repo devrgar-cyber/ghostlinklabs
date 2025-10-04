@@ -10,14 +10,24 @@ from ..runtime.policy import SovereigntyGate
 def main(ctx: Context, op: str, key: str = "notes", value: str | None = None):
     SovereigntyGate.require(ctx, "filesystem", path=ctx.vault_path)
     p = Path(ctx.vault_path) / "memory_layer_01.vault"
-    data = yaml.safe_load(p.read_text()) if p.exists() else {"version": 1, "notes": []}
+    raw = yaml.safe_load(p.read_text()) if p.exists() else None
+    if not isinstance(raw, dict):
+        data: dict[str, object] = {"version": 1}
+    else:
+        data = raw
+    if "notes" not in data or not isinstance(data["notes"], list):
+        data["notes"] = []
     if op == "add_line":
-        arr = data.get(key, [])
-        arr.append(f"{int(time.time())}: {value}")
+        existing = data.get(key)
+        arr = list(existing) if isinstance(existing, list) else []
+        arr.append(f"{int(time.time())}: {value if value is not None else ''}")
         data[key] = arr
     elif op == "set_kv":
-        if "kv" not in data: data["kv"] = {}
-        data["kv"][key] = value
+        kv = data.get("kv")
+        if not isinstance(kv, dict):
+            kv = {}
+        kv[key] = value
+        data["kv"] = kv
     elif op == "del_k":
         if "kv" in data and key in data["kv"]: del data["kv"][key]
     else:
