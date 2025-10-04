@@ -53,6 +53,41 @@ notes:
   - "Receipts are append-only in vault/receipts.log"
 """.lstrip()
 
+DEFAULT_TOOL_POLICY = """
+allow:
+  - MAP
+  - CLEANSE
+  - RECAST
+  - REFLECT
+  - SCAN
+  - MIRROR
+  - FORGE
+  - LINK
+  - STATUS
+  - CLEANSE_PII
+  - DNA_CODEC
+  - VAULT_ENCRYPT
+  - VAULT_DECRYPT
+  - GPIO_READ
+  - CAN_READ
+  - OBD_READ
+  - ADC_READ
+  - SERIAL_SNIFF
+  - CAMERA_SNAP
+  - FLIR_READ
+  - NOTES_CRDT
+""".lstrip()
+
+DEFAULT_PROFILES = """
+profiles:
+  dev:
+    max_bytes: 10000000
+  field:
+    max_bytes: 2000000
+  locked:
+    max_bytes: 200000
+""".lstrip()
+
 def write_if_missing(path: Path, content: str):
     if not path.exists():
         path.write_text(content, encoding="utf-8")
@@ -65,10 +100,11 @@ if __name__ == "__main__":
     write_if_missing(VAULT / "core.vault", DEFAULT_CORE)
     write_if_missing(VAULT / "macros.vault", DEFAULT_MACROS)
     write_if_missing(VAULT / "memory_layer_01.vault", DEFAULT_MEMORY)
+    write_if_missing(VAULT / "tool_policy.vault", DEFAULT_TOOL_POLICY)
+    write_if_missing(VAULT / "policy_profiles.vault", DEFAULT_PROFILES)
     mf = VAULT / "manifest.json"
     if not mf.exists():
-        mf.write_text('{"version":"1.0","hash_algo":"sha256","core":{}}
-')
+        mf.write_text('{"version":"1.0","hash_algo":"sha256","core":{}}\n')
         print(f"created {mf}")
     else:
         print(f"exists  {mf}")

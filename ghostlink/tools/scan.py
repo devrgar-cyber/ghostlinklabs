@@ -9,7 +9,7 @@ _WORD = re.compile(r"[A-Za-z0-9_'\-]+")
 
 def main(ctx: Context, source: str):
     """SCAN {topic|file|fragment}: reflect & bind atoms from a file."""
-    SovereigntyGate.require(ctx, "filesystem")
+    SovereigntyGate.require(ctx, "filesystem", path=source)
     p = Path(source)
     data = p.read_bytes()
     text = data.decode("utf-8", errors="replace")

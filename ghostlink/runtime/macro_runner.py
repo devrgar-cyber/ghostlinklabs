@@ -9,6 +9,7 @@ from .policy import Wraithgate
 from .verify_and_restore import verify_manifest
 from .ghostlink import RUNTIME_EXECUTION
 from .template import render
+from .snapshot import snapshot_vault
 
 BASE = Path(__file__).resolve().parents[1]
 VAULT = BASE / "vault"
@@ -32,6 +33,10 @@ def run_macro(ctx: Context, macro_name: str, params: Dict[str, Any]) -> Any:
     if missing:
         raise ValueError(f"macro missing params: {', '.join(missing)}")
 
+    # snapshots
+    snaps_dir = VAULT / "snapshots" / ctx.run_id
+    before = snapshot_vault(VAULT, snaps_dir / "before")
+
     env = dict(params)
     prev: Any = None
     last_output: Any = None
@@ -46,7 +51,8 @@ def run_macro(ctx: Context, macro_name: str, params: Dict[str, Any]) -> Any:
         prev = out
         env["prev"] = out
 
-    return last_output
+    after = snapshot_vault(VAULT, snaps_dir / "after")
+    return {"macro": macro_name, "result": last_output, "_artifacts": [before, after]}
 
 def expand_macro_steps(macro_name: str, params: Dict[str, Any]) -> Dict[str, Any]:
     """Preview resolved step parameters WITHOUT executing tools."""

@@ -10,8 +10,8 @@ def main(ctx: Context, target: str, role: str = ""):
     LINK {thread|role}: stitch a reference into the current lane.
     Implementation: append to vault/ghoststate.json (ephemeral continuity).
     """
-    SovereigntyGate.require(ctx, "filesystem")
     state_path = Path(ctx.vault_path) / "ghoststate.json"
+    SovereigntyGate.require(ctx, "filesystem", path=str(state_path))
     state = {}
     if state_path.exists():
         try: state = json.loads(state_path.read_text())

@@ -5,7 +5,7 @@ from ..runtime.policy import SovereigntyGate
 from ..runtime.context import Context
 
 def main(ctx: Context, source: str):
-    SovereigntyGate.require(ctx, "filesystem")
+    SovereigntyGate.require(ctx, "filesystem", path=source)
     p = Path(source)
     text = p.read_text(encoding="utf-8")
     return {

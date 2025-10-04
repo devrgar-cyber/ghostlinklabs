@@ -1,0 +1,7 @@
+profiles:
+  dev:
+    max_bytes: 10000000
+  field:
+    max_bytes: 2000000
+  locked:
+    max_bytes: 200000

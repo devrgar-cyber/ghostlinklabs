@@ -1,0 +1,14 @@
+[project]
+name = "ghostlink"
+version = "0.1.0"
+description = "GhostLink — cold, sovereign, deterministic runtime"
+authors = [{name="GhostLinkLabs"}]
+requires-python = ">=3.10"
+dependencies = ["PyYAML>=6.0"]
+
+[project.scripts]
+ghostlink = "ghostlink.dreamshell:main"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"

@@ -18,14 +18,14 @@ def main(ctx: Context, artifact: str, content: str = "", mode: str = "text"):
     FORGE {artifact}: write a copy-pasteable structured block.
     mode: "text"|"json"
     """
-    SovereigntyGate.require(ctx, "filesystem")
     outdir = Path(ctx.vault_path).parent / "outputs"
     outdir.mkdir(parents=True, exist_ok=True)
     target = outdir / artifact
     if target.suffix not in _allowed_ext(ctx.vault_path):
         raise ValueError(f"forbidden extension: {target.suffix}")
+    encoded = content
     if mode == "json":
-        target.write_text(json.dumps(json.loads(content), indent=2, sort_keys=True), encoding="utf-8")
-    else:
-        target.write_text(content, encoding="utf-8")
+        encoded = json.dumps(json.loads(content), indent=2, sort_keys=True)
+    SovereigntyGate.require(ctx, "filesystem", path=str(target), bytes_out=len(encoded.encode("utf-8")))
+    target.write_text(encoded, encoding="utf-8")
     return {"artifact": str(target), "bytes": target.stat().st_size}
