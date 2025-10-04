@@ -1,8 +1,14 @@
 import os
 from typing import Optional
-from dotenv import load_dotenv
 
-# Load environment variables from .env file
+try:  # pragma: no cover - environment dependent
+    from dotenv import load_dotenv
+except ModuleNotFoundError:  # pragma: no cover - fallback used in tests
+    def load_dotenv(*args, **kwargs):  # type: ignore[override]
+        """Graceful fallback when python-dotenv is unavailable."""
+        return False
+
+# Load environment variables from .env file (no-op if dotenv missing)
 load_dotenv()
 
 class Config:
