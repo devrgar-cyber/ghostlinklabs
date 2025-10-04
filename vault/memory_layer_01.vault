@@ -1,0 +1,4 @@
+version: 1
+notes:
+  - "GhostLink vault initialized."
+  - "Receipts are append-only in vault/receipts.log"

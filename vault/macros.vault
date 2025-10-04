@@ -1,0 +1,28 @@
+version: 1
+macros:
+  DEEPWALK:
+    comment: canonical, offline diagnostic pass
+    steps:
+      - tool: MAP
+        with: { source: "{{file}}" }
+      - tool: REFLECT
+        with: { data: "{{prev}}" }
+      - tool: RECAST
+        with: { data: "{{prev}}", to: "json" }
+    params:
+      required: ["file"]
+
+  SCANFORGE:
+    comment: scan a file, render to JSON text, forge artifact
+    steps:
+      - tool: SCAN
+        with: { source: "{{file}}" }
+      - tool: RECAST
+        with: { data: "{{prev}}", to: "json" }
+      - tool: FORGE
+        with:
+          artifact: "scan_report.json"
+          mode: "json"
+          content: "{{prev.text}}"
+    params:
+      required: ["file"]
