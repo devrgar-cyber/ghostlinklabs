@@ -1,0 +1,1 @@
+GhostLink documentation placeholder.
