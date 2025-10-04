@@ -1,0 +1,11 @@
+{
+  "signing": {
+    "algo": "ed25519",
+    "pubkey": "<insert-operator-pubkey>",
+    "covered": [
+      "gl-kernel.max.json",
+      "boot.max.ucl",
+      "kernel.schema.json"
+    ]
+  }
+}
