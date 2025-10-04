@@ -1,13 +1,87 @@
-"""Utilities for defining GhostLink conceptual components.
-
-This helper centralizes the structure used by the symbolic component
-functions that describe the GhostLink architecture.  The hidden tests
-exercise a wide range of these components, so we keep the structure
-strictly typed and predictable.
-"""
+"""Utilities for defining and validating GhostLink conceptual components."""
 from __future__ import annotations
 
-from typing import Iterable, Mapping, Any
+from collections.abc import Callable, Iterable, Mapping
+from dataclasses import dataclass
+from typing import Any, TypedDict, cast
+
+__all__ = [
+    "ComponentDict",
+    "ComponentFactory",
+    "ComponentValidationError",
+    "automatic_purpose",
+    "create_component",
+    "define_component",
+    "validate_component_structure",
+]
+
+
+class ComponentDict(TypedDict):
+    """Canonical dictionary layout for a GhostLink component."""
+
+    name: str
+    layer: str
+    purpose: str
+    inputs: list[str]
+    outputs: list[str]
+    metadata: dict[str, Any]
+
+
+ComponentFactory = Callable[[], "ComponentDict"]
+
+
+@dataclass(slots=True)
+class ComponentValidationError(ValueError):
+    """Raised when a component dictionary fails validation."""
+
+    message: str
+    field: str | None = None
+
+    def __post_init__(self) -> None:
+        super().__init__(self.message)
+
+    def __str__(self) -> str:  # pragma: no cover - dataclass convenience
+        if self.field is None:
+            return self.message
+        return f"{self.field}: {self.message}"
+
+
+def _coerce_signal_list(values: Iterable[str] | None, *, field: str) -> list[str]:
+    result: list[str] = []
+    if values is None:
+        return result
+    if isinstance(values, str):
+        raise ComponentValidationError(
+            "Expected an iterable of strings, received a string",
+            field=field,
+        )
+    for item in values:
+        if not isinstance(item, str):
+            raise ComponentValidationError(
+                f"Expected {field} entries to be strings, received {type(item)!r}",
+                field=field,
+            )
+        result.append(item)
+    return result
+
+
+def _coerce_metadata(metadata: Mapping[str, Any] | None) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    if metadata is None:
+        return result
+    if not isinstance(metadata, Mapping):
+        raise ComponentValidationError(
+            f"Metadata must be a mapping, received {type(metadata)!r}",
+            field="metadata",
+        )
+    for key, value in metadata.items():
+        if not isinstance(key, str):
+            raise ComponentValidationError(
+                f"Metadata keys must be strings, received {type(key)!r}",
+                field="metadata",
+            )
+        result[key] = value
+    return result
 
 
 def define_component(
@@ -18,45 +92,24 @@ def define_component(
     inputs: Iterable[str] | None = None,
     outputs: Iterable[str] | None = None,
     metadata: Mapping[str, Any] | None = None,
-) -> dict[str, Any]:
-    """Create a component description dictionary.
+) -> ComponentDict:
+    """Create a component description dictionary with defensive copying."""
 
-    Parameters
-    ----------
-    name:
-        Canonical uppercase name of the component.
-    layer:
-        The subsystem layer that owns the component (``core``, ``mesh``
-        and so on).
-    purpose:
-        A natural language description of what the component represents
-        inside the symbolic GhostLink model.
-    inputs / outputs:
-        Optional iterables describing the expected signals for the
-        component.  The values are copied into lists so callers receive a
-        fresh structure on every invocation.
-    metadata:
-        Optional dictionary providing free-form structured details.
-    """
-    return {
-        "name": name,
-        "layer": layer,
-        "purpose": purpose,
-        "inputs": list(inputs or []),
-        "outputs": list(outputs or []),
-        "metadata": dict(metadata or {}),
-    }
+    return cast(
+        ComponentDict,
+        {
+            "name": name,
+            "layer": layer,
+            "purpose": purpose,
+            "inputs": _coerce_signal_list(inputs, field="inputs"),
+            "outputs": _coerce_signal_list(outputs, field="outputs"),
+            "metadata": _coerce_metadata(metadata),
+        },
+    )
 
 
 def automatic_purpose(name: str, layer: str) -> str:
-    """Generate a default purpose string for a component.
-
-    The helper converts the symbolic ``name`` into a human readable
-    description and anchors it to the provided ``layer``.  Individual
-    modules can still supply a custom purpose when they need to be more
-    specific, but the automatic version keeps the boilerplate concise and
-    consistent.
-    """
+    """Generate a default purpose string for a component."""
 
     readable = name.replace("_", " ").lower()
     return f"Coordinates {readable} operations within the {layer} layer."
@@ -70,12 +123,8 @@ def create_component(
     inputs: Iterable[str] | None = None,
     outputs: Iterable[str] | None = None,
     metadata: Mapping[str, Any] | None = None,
-) -> dict[str, Any]:
-    """Return a fully populated component dictionary.
-
-    ``purpose`` defaults to :func:`automatic_purpose` when omitted so the
-    individual modules stay compact.
-    """
+) -> ComponentDict:
+    """Return a fully populated component dictionary."""
 
     return define_component(
         name,
@@ -84,4 +133,81 @@ def create_component(
         inputs=inputs,
         outputs=outputs,
         metadata=metadata,
+    )
+
+
+def _require(component: Mapping[str, Any], key: str) -> Any:
+    if key not in component:
+        raise ComponentValidationError(f"Missing required field {key!r}", field=key)
+    return component[key]
+
+
+def validate_component_structure(
+    component: Mapping[str, Any],
+    *,
+    expect_layer: str | None = None,
+) -> ComponentDict:
+    """Validate and normalize an arbitrary component mapping.
+
+    Parameters
+    ----------
+    component:
+        Input mapping containing the component definition.
+    expect_layer:
+        Optional expected layer name to enforce (used by the audit tooling
+        to ensure module-local consistency).
+    """
+
+    if not isinstance(component, Mapping):
+        raise ComponentValidationError(
+            f"Component must be a mapping, received {type(component)!r}",
+        )
+
+    name = _require(component, "name")
+    if not isinstance(name, str):
+        raise ComponentValidationError("Component name must be a string", field="name")
+    if name != name.upper():
+        raise ComponentValidationError("Component name must be uppercase", field="name")
+
+    layer = _require(component, "layer")
+    if not isinstance(layer, str):
+        raise ComponentValidationError("Component layer must be a string", field="layer")
+    if expect_layer is not None and layer != expect_layer:
+        raise ComponentValidationError(
+            f"Component layer {layer!r} does not match expected {expect_layer!r}",
+            field="layer",
+        )
+
+    purpose = _require(component, "purpose")
+    if not isinstance(purpose, str):
+        raise ComponentValidationError("Purpose must be a string", field="purpose")
+    if not purpose:
+        raise ComponentValidationError("Purpose must not be empty", field="purpose")
+
+    inputs = component.get("inputs", [])
+    outputs = component.get("outputs", [])
+    metadata = component.get("metadata", {})
+    if not isinstance(inputs, Iterable):
+        raise ComponentValidationError(
+            f"Inputs must be iterable, received {type(inputs)!r}",
+            field="inputs",
+        )
+    if not isinstance(outputs, Iterable):
+        raise ComponentValidationError(
+            f"Outputs must be iterable, received {type(outputs)!r}",
+            field="outputs",
+        )
+    if not isinstance(metadata, Mapping):
+        raise ComponentValidationError(
+            f"Metadata must be a mapping, received {type(metadata)!r}",
+            field="metadata",
+        )
+
+    return define_component(
+        name,
+        layer,
+        purpose,
+        inputs=cast(Iterable[str], inputs),
+        outputs=cast(Iterable[str], outputs),
+        metadata=cast(Mapping[str, Any], metadata),
     )
