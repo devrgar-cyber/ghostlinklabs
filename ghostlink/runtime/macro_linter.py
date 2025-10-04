@@ -44,6 +44,7 @@ def lint_macro(macro_name: str) -> Dict[str, Any]:
         report["errors"].append("params.required must be a list")
 
     env = {k: f"<{k}>" for k in required}
+    env["prev"] = "<prev>"
     prev = "<prev>"
 
     for idx, step in enumerate(steps, start=1):
@@ -64,7 +65,7 @@ def lint_macro(macro_name: str) -> Dict[str, Any]:
             continue
 
         keys = referenced_keys(raw_with)
-        unknown = [k for k in keys if not (k == "prev" or k.split(".")[0] in env)]
+        unknown = [k for k in keys if k.split(".")[0] not in env]
         if unknown:
             report["warnings"].append(f"step {idx} ({tool}): unknown placeholders: {unknown}")
 
