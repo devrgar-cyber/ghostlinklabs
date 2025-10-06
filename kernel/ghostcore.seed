@@ -1,0 +1,58 @@
+# Ghostcore MAX Seed
+
+kernel_id=GHOSTCORE_FINAL_MAX
+version=0.1.0
+
+[determinism]
+manual_only=True
+background_processes=False
+replayable=True
+hash_algo=sha256
+
+[laws]
+L-01=Cold Boot|stateless;seed-only-init
+L-02=Collapse|controlled_shutdown;no_residuals
+L-03=Longevity|redundancy;replay_recovery
+L-04=Planning|pre_mapped_pipeline
+L-05=Web Integration|explicit_network_caps
+L-06=Web Controller|manual_dashboard;full_logging
+L-07=R&D Protocol|attach_research_on_shard_actions
+
+[pipelines]
+P-01=MAP|parse|PLN-1a-skeleton;PLN-1b-lex;PLN-1c-ast;PLN-1d-normalize;PLN-1e-index
+P-02=CLEANSE|scrub|PLN-2a-trim;PLN-2b-dedup;PLN-2c-noise;PLN-2d-validate;PLN-2e-sanitize
+P-03=SURGE|accelerate|PLN-3a-fastscan;PLN-3b-batch;PLN-3c-parallel;PLN-3d-throttle;PLN-3e-postcheck
+P-04=LOCK|bound|PLN-4a-caps;PLN-4b-scope;PLN-4c-roles;PLN-4d-ratelimit;PLN-4e-freeze
+P-05=SILENCE|mute|PLN-5a-output;PLN-5b-logs;PLN-5c-events;PLN-5d-network;PLN-5e-hardware
+P-06=REFLECT|mirror|PLN-6a-snapshot;PLN-6b-compare;PLN-6c-delta;PLN-6d-verify;PLN-6e-report
+P-07=ECHOFRAME_BIND|bind_state|PLN-7a-stamp;PLN-7b-chain;PLN-7c-uid;PLN-7d-proof;PLN-7e-store
+P-08=WEAVE|connect|PLN-8a-route;PLN-8b-bus;PLN-8c-topology;PLN-8d-cache;PLN-8e-verify
+P-09=BIND|fuse|PLN-9a-join;PLN-9b-conflict;PLN-9c-weights;PLN-9d-resolve;PLN-9e-commit
+P-10=SEAL|finalize|PLN-10a-freeze;PLN-10b-sign;PLN-10c-index;PLN-10d-reference;PLN-10e-stamp
+P-11=SNAPSHOT|capture|PLN-11a-state;PLN-11b-meta;PLN-11c-hash;PLN-11d-store;PLN-11e-attest
+P-12=COLLAPSE|halt|PLN-12a-flush;PLN-12b-zeroize;PLN-12c-release;PLN-12d-halt;PLN-12e-announce
+
+[tools]
+MAP
+CLEANSE
+SURGE
+REFLECT
+RECAST
+RETURN
+WRENCH
+RECALL
+LOCK
+SILENCE
+SHELL
+MACROS
+MIRROR
+SHADOW
+BIND
+
+[rebuild]
+mkdir -p ghostlink/{runtime,boot,access,core,mesh,lattice,tools,reflect,agents,diagnostic,neural_link,kernel,chains,opcode,shards,reforge,time,simulation,index,docs}
+emit runtime/ghostlink.py from template:cli
+emit tools/* from template:tools
+write kernel/ghostcore.seed from seed
+write chains/*, opcode/*, docs/*
+create tests/*
