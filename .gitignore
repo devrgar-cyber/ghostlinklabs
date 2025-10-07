@@ -76,6 +76,15 @@ ENV/
 env.bak/
 venv.bak/
 
+# Python packaging
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+pip-log.txt
+pip-delete-this-directory.txt
+
 # Test artifacts
 coverage.txt
 coverage.html

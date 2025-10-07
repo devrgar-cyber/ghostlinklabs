@@ -1,0 +1,9 @@
+include README.md
+include LICENSE
+include requirements.txt
+recursive-include ghostlink *.md
+recursive-include ghostlink *.json
+recursive-include ghostlink *.txt
+recursive-exclude ghostlink/__pycache__ *
+recursive-exclude ghostlink *.pyc
+recursive-exclude ghostlink *.pyo

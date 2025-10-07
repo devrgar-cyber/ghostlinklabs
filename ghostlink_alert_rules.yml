@@ -1,0 +1,17 @@
+groups:
+- name: ghostlink
+  rules:
+  - alert: GhostLinkScarWindow
+    expr: ghostlink_scar_flag == 1
+    for: 1m
+    labels: {severity: critical}
+    annotations:
+      summary: "SCAR detected in ROI {{ $labels.roi }}"
+      description: "GhostLink scar_flag=1 for at least 1 minute."
+  - alert: GhostLinkSigmaDrop
+    expr: avg_over_time(ghostlink_sigma_fraction[2m]) < 0.8
+    for: 3m
+    labels: {severity: warning}
+    annotations:
+      summary: "Σ drop in ROI {{ $labels.roi }}"
+      description: "Average Σ below 0.8 for 3 minutes."

@@ -1,0 +1,24 @@
+[Unit]
+Description=GhostLink OpenAI Bridge (TCP 127.0.0.1:7422)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ghostlink
+Group=ghostlink
+EnvironmentFile=/etc/default/ghostlink
+WorkingDirectory=/opt/ghostlink
+ExecStart=/usr/bin/python3 /opt/ghostlink/gl_openai_bridge.py
+Restart=on-failure
+NoNewPrivileges=yes
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=true
+
+[Install]
+WantedBy=multi-user.target

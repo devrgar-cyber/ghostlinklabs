@@ -1,0 +1,35 @@
+module GhostLink;
+
+topology sphere(icosahedral_subdiv=4);
+
+state  X : u8<N>   = VOID;
+mask   A : mask<N>;
+field  COH : f32<N>;
+field  PAIN: f32<N>;
+field  ENT : f32<N>;
+field  RHO : f32<N> = 0.0;   // scar trace
+field  KAP : f32<N> = 0.0;   // compost trace
+rng    R   : rng<N>;
+global SELF: f32[8];
+
+rules {
+  spawn    p0=0.05, alpha_c=0.10;
+  collapse E_sigma= 0.5*COH - 0.2*PAIN + dot(SELF,W_s),
+           E_scar = 0.3*PAIN - 0.2*COH + dot(SELF,W_r),
+           E_comp = 0.3*ENT  - 0.2*COH;
+  recycle  r0=0.10, beta_h=0.10, beta_c=0.05;
+  trace    lambda_rho=0.95, lambda_kappa=0.95;
+  order    temp=0.7;
+}
+
+tick {
+  SELECTΔ      -> A;
+  MAPNBR COH,PAIN,ENT on A;
+  SELFENC SELF = Encode(X,RHO,KAP,activity(A));
+  SCORE        -> E_sigma,E_scar,E_comp on A with SELF;
+  SOFTMAX/DRAW -> picks using R on A;
+  WRITE        -> X from picks;
+  RECYCLE      -> X using R;
+  TRACE        -> RHO,KAP from X;
+  ORDER        -> update scheduler stats;
+}

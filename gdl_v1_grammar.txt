@@ -1,0 +1,29 @@
+GDL v1.0 — Minimal Grammar (EBNF-ish)
+-------------------------------------
+Program      ::= Header Topology Fields Rules Pipeline
+
+Header       ::= "module" ID ";"
+Topology     ::= "topology" ID "(" NEIGHBOR_SPEC ")" ";"
+Fields       ::= { FieldDecl }
+FieldDecl    ::= ("field" | "mask" | "state" | "rng" | "global") ID ":" TYPE [ "=" INIT ] ";"
+
+Rules        ::= "rules" "{"  SpawnDecl CollapseDecl RecycleDecl TraceDecl OrderDecl  "}"
+SpawnDecl    ::= "spawn p0=" F "," "alpha_c=" F ";"
+CollapseDecl ::= "collapse" "E_sigma=" Expr "," "E_scar=" Expr "," "E_comp=" Expr ";"
+RecycleDecl  ::= "recycle r0=" F "," "beta_h=" F "," "beta_c=" F ";"
+TraceDecl    ::= "trace lambda_rho=" F "," "lambda_kappa=" F ";"
+OrderDecl    ::= "order temp=" F ";"
+
+Pipeline     ::= "tick" "{" Step+ "}"
+Step         ::= "SELECTΔ" |
+                 "MAPNBR COH=..." |
+                 "SELFENC s=Encode(...)" |
+                 "SCORE energies=..." |
+                 "SOFTMAX/DRAW" |
+                 "WRITE" |
+                 "RECYCLE" |
+                 "TRACE" |
+                 "ORDER"
+
+TYPE         ::= "f32<N>" | "u8<N>" | "mask<N>" | "rng<N>" | "global<f32[k]>"
+Expr         ::= affine combinations of fields, neighbors, global, rng

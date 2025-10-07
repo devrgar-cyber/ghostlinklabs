@@ -1,0 +1,40 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "\u03a3 (good fraction)",
+      "targets": [
+        {
+          "expr": "ghostlink_sigma_fraction"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "SCAR (flag)",
+      "targets": [
+        {
+          "expr": "ghostlink_scar_flag"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Window Samples",
+      "targets": [
+        {
+          "expr": "ghostlink_window_samples"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 36,
+  "title": "GhostLink",
+  "version": 1
+}

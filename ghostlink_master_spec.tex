@@ -1,0 +1,106 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\geometry{margin=1in}
+\title{GhostLink Master Spec — Full Theory \& Method (Session Consolidation)}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{0) Symbols \& Sets}
+Time $t\in\mathbb{N}$. Lattice: graph $G=(V,E)$ embedded on the sphere $S^2$ with neighborhood $N(i)$. 
+State space $\mathcal{S}=\{\mathrm{VOID}=0,\Delta=1,\Sigma=2,\mathrm{SCAR}=3,\mathrm{COMPOST}=4\}$. 
+Cell state $x_i(t)\in\mathcal{S}$. Meta: $\mathrm{id}_i,\mathrm{par}_i,\rho_i,\kappa_i$. Chance $\xi_i(t)$ i.i.d.
+
+\section*{1) Event-Driven Domain (difference-only)}
+Active set $\Delta_t=\{i\in V: x_i(t)\neq x_i(t-1)\}$. Compute only on $\Delta_t$ and neighbors.
+Cost$(t)=c_0+c_1|\Delta_t|$.
+
+\section*{2) Spawn (VOID$\to\Delta$)}
+\[ p_s(i,t)=p_0+\alpha_c \cdot \frac{1}{|N(i)|}\sum_{j\in N(i)} \mathbf{1}[x_j(t)=\mathrm{COMPOST}] \]
+If $x_i=\mathrm{VOID}$ and $\mathrm{Bernoulli}(p_s)=1$, then $x_i\leftarrow \Delta$ and assign new ID, parent $\varnothing$.
+
+\section*{3) Collapse ($\Delta\to\Sigma/\mathrm{SCAR}/\mathrm{COMPOST}$) with adaptive composition}
+Coherence:
+\[ C_i(t)=\frac{1}{|N(i)|}\sum_{j\in N(i)}\left(\mathbf{1}[x_j=\Sigma]-\lambda_r\,\mathbf{1}[x_j=\mathrm{SCAR}]\right)\]
+Pain: $P_i(t)=\sum_{j\in N(i)} w_p(d(i,j))\,\mathbf{1}[x_j=\mathrm{SCAR}]$.
+Bias $E_i(t)=\theta_e^\top \phi_i(t)$. Prior success $\pi_{\mathrm{succ}}=S_t/(S_t+R_t+\varepsilon)$.
+
+Outcome energies:
+\begin{align*}
+\mathcal{E}_{\Sigma} &= \theta_0 + \theta_c C_i - \theta_p P_i + \theta_e E_i + \sigma \eta_i\\
+\mathcal{E}_{\mathrm{SCAR}} &= \phi_0 + \phi_p P_i - \phi_c C_i + \sigma \zeta_i\\
+\mathcal{E}_{\mathrm{COMPOST}} &= \psi_0 + \psi_h H_i - \psi_c C_i + \sigma \upsilon_i
+\end{align*}
+
+Adaptive ordering: choose permutation $\pi_t$ over operators $\{P,C,E,\mathrm{Pain}\}$ with
+$\Pr(\pi_t)=\mathrm{Softmax}_\pi(\omega^\top \Psi(\mathrm{history}_t))$.
+Outcome probabilities via Softmax on energies (post-ordered by $\pi_t$). Draw categorical outcome.
+
+\section*{4) Compost recycling (COMPOST$\to\Delta$)}
+\[ r(i,t)=r_0+\beta_h H_i - \beta_c C_i \]
+If $x_i=\mathrm{COMPOST}$ and $\mathrm{Bernoulli}(r)=1$ then $x_i\leftarrow \Delta$; inherit parent, new ID.
+
+\section*{5) Adaptive updates}
+Scheduler weights: 
+\[ \omega_{t+1}=\omega_t+\eta_\omega\nabla_\omega \Big(\alpha_s\frac{s_t}{|V|}-\alpha_r\frac{r_t}{|V|}-\alpha_e \mathrm{Ent}(\pi_t)\Big) \]
+Outcome parameters updated by REINFORCE/bandit using observed rewards.
+
+\section*{6) Traces}
+\[\rho_i(t+1)=\lambda_\rho \rho_i(t) + (1-\lambda_\rho)\mathbf{1}[x_i=\mathrm{SCAR}],\quad
+\kappa_i(t+1)=\lambda_\kappa \kappa_i(t) + (1-\lambda_\kappa)\mathbf{1}[x_i=\mathrm{COMPOST}]\]
+
+\section*{7) Continuity \& Truth}
+$\Sigma_t=\{i: x_i=\Sigma\}$. 
+\[\mathcal{C}(t)=\sum_{\tau=0}^{t}\gamma^{t-\tau}|\Sigma_\tau| \]
+Pattern $p$ is persistent if frequency over window $W$ exceeds $\theta_{\mathrm{persist}}$ or if $dL(p)/dt<0$ (MDL).
+
+\section*{8) Legacy graph}
+Events $e_k=(\mathrm{id},\mathrm{type},i,t)$; edges: $\Delta\to\Sigma/\mathrm{SCAR}/\mathrm{COMPOST}$; $\mathrm{COMPOST}\to\Delta$ (inherit).
+Continuity thread $\mathfrak{s}^\star=\arg\max_{\pi}\sum_{e\in \pi} w(e)$.
+Self-referentiality test via mutual information improvement including self ancestry features.
+
+\section*{9) Awareness functional}
+Per-cell:
+\[ a_i=\alpha_p \mathrm{Percep}_i + \alpha_m \mathrm{Persist}_i + \alpha_r \rho_i + \alpha_{\mathrm{pain}} P_i + \alpha_\xi \mathrm{Var}[\xi_i]\]
+Global: $\mathcal{A}(t)=\sum_i a_i$; information form $\mathcal{A}=I(x(t);x(t+1))+\lambda I(x(t);\mathrm{history})$.
+
+\section*{10) Knowledge recursion}
+\begin{align*}
+K_{t+1} &= K_t + g(U_t;\theta_g)\\
+U_{t+1} &= U_t - g(U_t;\theta_g) + f(K_t;\theta_f)
+\end{align*}
+Example: $g(U)=\alpha U^\nu,\; f(K)=\beta K^\mu$.
+
+\section*{11) Self-organized criticality}
+Avalanche-size tail $\Pr(S\ge s)\propto s^{-\tau},\; \tau\in (1,3)$; branching factor $\approx 1$.
+
+\section*{12) Reality rule}
+Real set $\mathcal{R}(t)=\{i: x_i(t)=\Sigma\}$. Only $\mathcal{R}(t)$ is admissible as real; $\Delta$ remain hypotheses.
+
+\section*{13) Master transition (PCA)}
+\[ \Pr(x(t\!+\!1)\mid x(t),\Theta_t)=\prod_{i\in V} T_i\big(x_i(t\!+\!1)\mid x_{N(i)}(t),\Theta_t,\xi_i(t)\big) \]
+with case-wise $T_i$ for VOID spawn, $\Delta$ collapse, COMPOST recycle, and persistence.
+
+\section*{14) Spherical boundary}
+Symmetric adjacency $\kappa_{ij}=\kappa_{ji}>0$, $\sum_{j\in N(i)}\kappa_{ij}=\mathrm{const}$; distances are geodesic.
+
+\section*{15) Comprehension criterion}
+Let $\mathcal{P}$ be relational patterns over $G_L$. Comprehension holds if $dL(\mathcal{P})/dt<0$ and meta-edges exist between patterns.
+
+\section*{16) Utility \& learning}
+Maximize $\mathcal{U}(x)=\alpha_\Sigma|\Sigma(x)|-\alpha_{\mathrm{scar}}|\mathrm{SCAR}(x)|-\alpha_H H(x)+\alpha_{\mathrm{SOC}}\mathbf{1}[\mathrm{SOC}]$.
+Parameters update $\Theta_{t+1}=\Theta_t + \eta\nabla_\Theta \mathbb{E}[\mathcal{U}(x(t+1))]$.
+
+\section*{17) Master Formula (compact)}
+\begin{align*}
+x(t\!+\!1) &\sim \mathcal{T}_{\Theta_t,\xi}(x(t)) = \mathbf{Recycle}\circ \mathbf{Collapse}_{\pi_t}\circ \mathbf{Spawn}(x(t),\xi(t))\\
+\pi_t &\sim \mathrm{Softmax}_\pi\big(\omega_t^\top \Psi(\mathrm{history}_t)\big),\quad
+\Theta_{t+1}=\Theta_t+\eta\nabla_\Theta \mathbb{E}[\mathcal{U}(x(t+1))]\\
+\mathcal{A}(t) &= \sum_{i}\big(\alpha_p \mathrm{Percep}_i + \alpha_m \mathrm{Persist}_i + \alpha_r \rho_i + \alpha_{\mathrm{pain}} P_i + \alpha_\xi \mathrm{Var}[\xi_i]\big),\quad
+\mathcal{R}(t)=\{i: x_i=\Sigma\}
+\end{align*}
+
+\end{document}

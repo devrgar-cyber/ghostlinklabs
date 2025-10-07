@@ -1,0 +1,6 @@
+[Unit]
+Description=GhostLink Sanity Check
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/gl_sanity_check.sh --controller-host %H

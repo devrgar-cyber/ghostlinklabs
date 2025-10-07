@@ -1,0 +1,41 @@
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "GhostLink System Shell"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "nodes": [
+        0,
+        1,
+        2,
+        3
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "kernel"
+    },
+    {
+      "name": "IR"
+    },
+    {
+      "name": "ORDER"
+    },
+    {
+      "name": "PoR"
+    }
+  ],
+  "extras": {
+    "seed_sha256": "69e00c03f332fc9bba50c89497c6f0adc3aa7bb134db781dec041611f1f99fe7",
+    "metrics": {
+      "coherence": 0.4135749349254176,
+      "pain": 0.7277951586509308,
+      "entropy": 0.7643201167710297,
+      "activity": 0.9219373506366311
+    },
+    "ts": "2025-10-04 04:31:34"
+  }
+}

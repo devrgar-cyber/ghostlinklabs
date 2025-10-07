@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GhostLink Kernel Max",
+  "type": "object",
+  "required": ["schema","kernel_id","version","qcl_agents","pipelines"],
+  "properties": {
+    "schema": {"const": "ghostlink.kernel.v1.max"},
+    "kernel_id": {"type": "string"},
+    "version": {"type": "string"},
+    "qcl_agents": {"type": "array", "minItems": 64},
+    "pipelines": {"type": "array", "minItems": 12}
+  }
+}

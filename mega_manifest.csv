@@ -1,0 +1,2 @@
+source_dir,rel_path,abs_path,size_bytes,sha256_prefix,type
+conversations_zip,conversations.json,/mnt/data/ghostlink_boot/incoming/conversations_zip/conversations.json,107211308,,text

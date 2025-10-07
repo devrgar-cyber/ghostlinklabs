@@ -1,0 +1,54 @@
+{
+  "op": "emerge",
+  "ts": "2025-10-04 04:31:34",
+  "view": "system_map",
+  "seed": {
+    "name": "GhostLink_Final_Project",
+    "version": "1.0",
+    "path": "/mnt/data/GhostLink_Final_Project.pdf",
+    "sha256": "69e00c03f332fc9bba50c89497c6f0adc3aa7bb134db781dec041611f1f99fe7",
+    "size_bytes": 63410
+  },
+  "nodes": [
+    {
+      "id": "kernel",
+      "type": "component"
+    },
+    {
+      "id": "IR",
+      "type": "component"
+    },
+    {
+      "id": "ORDER",
+      "type": "scheduler"
+    },
+    {
+      "id": "PoR",
+      "type": "proof_of_reality"
+    }
+  ],
+  "edges": [
+    {
+      "from": "kernel",
+      "to": "IR"
+    },
+    {
+      "from": "IR",
+      "to": "ORDER"
+    },
+    {
+      "from": "ORDER",
+      "to": "PoR"
+    },
+    {
+      "from": "PoR",
+      "to": "kernel"
+    }
+  ],
+  "metrics": {
+    "coherence": 0.4135749349254176,
+    "pain": 0.7277951586509308,
+    "entropy": 0.7643201167710297,
+    "activity": 0.9219373506366311
+  }
+}

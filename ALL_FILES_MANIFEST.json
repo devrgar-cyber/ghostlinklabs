@@ -1,0 +1,370 @@
+[
+  {
+    "path": "/mnt/data/__init__.py",
+    "name": "__init__.py",
+    "size_bytes": 35,
+    "mime": "text/x-python",
+    "sha256": "570cda9ca4274b28f9ecdf84557e7db2f6704fde708905eeb2107eb5c85f5add",
+    "modified_iso": "2025-10-04T13:12:30.404733"
+  },
+  {
+    "path": "/mnt/data/database.py",
+    "name": "database.py",
+    "size_bytes": 3002,
+    "mime": "text/x-python",
+    "sha256": "eda0284322101dfd669c29ae19ce312adfc3d6e4c7422fcff8cd7f61ed8526b3",
+    "modified_iso": "2025-10-04T13:12:31.055026"
+  },
+  {
+    "path": "/mnt/data/auth.py",
+    "name": "auth.py",
+    "size_bytes": 3047,
+    "mime": "text/x-python",
+    "sha256": "51f39b29659a991b8773caa6ea0de4ca80ed86ce1f2321d140483227a4b11f45",
+    "modified_iso": "2025-10-04T13:12:31.826863"
+  },
+  {
+    "path": "/mnt/data/storage.py",
+    "name": "storage.py",
+    "size_bytes": 551,
+    "mime": "text/x-python",
+    "sha256": "3136dfd24271ee596050620119a3179fbc32fa65ced3e51ec3168eabf7089937",
+    "modified_iso": "2025-10-04T13:12:32.749597"
+  },
+  {
+    "path": "/mnt/data/i.txt",
+    "name": "i.txt",
+    "size_bytes": 461196,
+    "mime": "text/plain",
+    "sha256": "88c23a285cca4b15e543985ead3d623f99e13b8eb21667eb4432832291e63b1d",
+    "modified_iso": "2025-10-04T13:12:32.852904"
+  },
+  {
+    "path": "/mnt/data/reasoning.py",
+    "name": "reasoning.py",
+    "size_bytes": 455,
+    "mime": "text/x-python",
+    "sha256": "28f88b435fad79957381d33bc3be6ef93d4ea3a281a16fe3a56e7a011db11613",
+    "modified_iso": "2025-10-04T13:12:32.858015"
+  },
+  {
+    "path": "/mnt/data/config.py",
+    "name": "config.py",
+    "size_bytes": 1129,
+    "mime": "text/x-python",
+    "sha256": "424be4d979870d4487e4eaa09675dab1d679386800919166bb7d911c86331bba",
+    "modified_iso": "2025-10-04T13:12:32.859354"
+  },
+  {
+    "path": "/mnt/data/f.txt",
+    "name": "f.txt",
+    "size_bytes": 416396,
+    "mime": "text/plain",
+    "sha256": "73f06af1d0be80123c97ffd6bc1cb655a3dc9c9ddcc8e7481a136084089fb100",
+    "modified_iso": "2025-10-04T13:12:32.960486"
+  },
+  {
+    "path": "/mnt/data/g.txt",
+    "name": "g.txt",
+    "size_bytes": 190488,
+    "mime": "text/plain",
+    "sha256": "fbaa6c13f1568f078f6c0ce6460c21be09242200fbc61087d2f3d1986a1fd88d",
+    "modified_iso": "2025-10-04T13:12:32.954144"
+  },
+  {
+    "path": "/mnt/data/k.txt",
+    "name": "k.txt",
+    "size_bytes": 372494,
+    "mime": "text/plain",
+    "sha256": "3a32cdc588b95ac9dca77e19afbeebbf7dd4d5e56b8894f966a6b001b47e544c",
+    "modified_iso": "2025-10-04T13:12:33.148914"
+  },
+  {
+    "path": "/mnt/data/main.py",
+    "name": "main.py",
+    "size_bytes": 5830,
+    "mime": "text/x-python",
+    "sha256": "5ce7fe3e56215fd90e5708fc0b18578facd6bc6b1794519592fdfef69d3b2b58",
+    "modified_iso": "2025-10-04T13:12:33.054889"
+  },
+  {
+    "path": "/mnt/data/q.txt",
+    "name": "q.txt",
+    "size_bytes": 373562,
+    "mime": "text/plain",
+    "sha256": "728b44a57cb994d4d2fcab0efcd12a409aa39ec575bdb578241e6641a6d41e45",
+    "modified_iso": "2025-10-04T13:12:33.148823"
+  },
+  {
+    "path": "/mnt/data/e.txt",
+    "name": "e.txt",
+    "size_bytes": 277571,
+    "mime": "text/plain",
+    "sha256": "c28217dd64e07f7211dc0635c7d606285fa6f33b13cd688eafc21aff6eacd89a",
+    "modified_iso": "2025-10-04T13:12:33.148843"
+  },
+  {
+    "path": "/mnt/data/Summmary 4.txt",
+    "name": "Summmary 4.txt",
+    "size_bytes": 3675,
+    "mime": "text/plain",
+    "sha256": "9df508863f54f26bd7f220a2a9029a61072c1610b32b2bc6c39f2e067644f51a",
+    "modified_iso": "2025-10-04T13:12:33.054957"
+  },
+  {
+    "path": "/mnt/data/h.txt",
+    "name": "h.txt",
+    "size_bytes": 226744,
+    "mime": "text/plain",
+    "sha256": "18c2cf2550e040b057b739cce92d8ec42de5de3b3cfad5f4385c57eb017c8fcf",
+    "modified_iso": "2025-10-04T13:12:33.161556"
+  },
+  {
+    "path": "/mnt/data/New Text Document.txt",
+    "name": "New Text Document.txt",
+    "size_bytes": 386317,
+    "mime": "text/plain",
+    "sha256": "09cb8d081ecfa81da3960e85aac6c23b0f1139bba10156a0dddb757fcda117ac",
+    "modified_iso": "2025-10-04T13:12:33.162145"
+  },
+  {
+    "path": "/mnt/data/p.txt",
+    "name": "p.txt",
+    "size_bytes": 190439,
+    "mime": "text/plain",
+    "sha256": "6707699d022c82cca68743debe9a1788ade4a265dd50fb2fa71ec9f6fc142bf2",
+    "modified_iso": "2025-10-04T13:12:33.161741"
+  },
+  {
+    "path": "/mnt/data/j.txt",
+    "name": "j.txt",
+    "size_bytes": 132232,
+    "mime": "text/plain",
+    "sha256": "d499573a2bb6a08a5647058fd220e6064e89d90144f6ac61f49cb65e172561ec",
+    "modified_iso": "2025-10-04T13:12:33.161785"
+  },
+  {
+    "path": "/mnt/data/Summary 9.txt",
+    "name": "Summary 9.txt",
+    "size_bytes": 4544,
+    "mime": "text/plain",
+    "sha256": "d5c7a9dab0508caf886b21ec7a283b7c34ae9a05884117aaf3efcbc865a4468f",
+    "modified_iso": "2025-10-04T13:12:33.447076"
+  },
+  {
+    "path": "/mnt/data/summary 8.txt",
+    "name": "summary 8.txt",
+    "size_bytes": 3239,
+    "mime": "text/plain",
+    "sha256": "29418978bdc21870df19b325e96bd677e9d8b2ff7a7e72df222de9f2de6cbeea",
+    "modified_iso": "2025-10-04T13:12:33.875289"
+  },
+  {
+    "path": "/mnt/data/Summary 7.txt",
+    "name": "Summary 7.txt",
+    "size_bytes": 3549,
+    "mime": "text/plain",
+    "sha256": "129736483dc0712a89a0f99c80f3aa9ebd806411408bd9a8ce177da01b2149a4",
+    "modified_iso": "2025-10-04T13:12:33.950163"
+  },
+  {
+    "path": "/mnt/data/Summary 6.txt",
+    "name": "Summary 6.txt",
+    "size_bytes": 3082,
+    "mime": "text/plain",
+    "sha256": "dbf9051f1c915fce100719457efd4f4e312996bd538d7a21bdecf02baf9cb40b",
+    "modified_iso": "2025-10-04T13:12:34.048775"
+  },
+  {
+    "path": "/mnt/data/8-14-2025 finally figured out the issue.txt",
+    "name": "8-14-2025 finally figured out the issue.txt",
+    "size_bytes": 485743,
+    "mime": "text/plain",
+    "sha256": "9c25f24b2c915126083f5ec20415d7d1c3c0259da46c1a92fb4402e64f275b06",
+    "modified_iso": "2025-10-04T13:12:34.348811"
+  },
+  {
+    "path": "/mnt/data/Summary 1.txt",
+    "name": "Summary 1.txt",
+    "size_bytes": 4350,
+    "mime": "text/plain",
+    "sha256": "5db921a3d4ae50169bf639309901053461672735d88434dfdd3430bea398a472",
+    "modified_iso": "2025-10-04T13:12:34.160336"
+  },
+  {
+    "path": "/mnt/data/Sumjmary 3.txt",
+    "name": "Sumjmary 3.txt",
+    "size_bytes": 3056,
+    "mime": "text/plain",
+    "sha256": "6212ae2d52bfaea5b3413248b548f064c25a2753dc4d9d498d32950a8d8a38f4",
+    "modified_iso": "2025-10-04T13:12:34.163397"
+  },
+  {
+    "path": "/mnt/data/Summary 2.txt",
+    "name": "Summary 2.txt",
+    "size_bytes": 3939,
+    "mime": "text/plain",
+    "sha256": "ba0f60ed345d6aacb00189b6c46b61f99526221b332fa28e142003914bbbbd45",
+    "modified_iso": "2025-10-04T13:12:34.229318"
+  },
+  {
+    "path": "/mnt/data/Comprehensive Analysis of the gHOSTLINK Worldbuilding Archive (SCRIPTS.zip).docx",
+    "name": "Comprehensive Analysis of the gHOSTLINK Worldbuilding Archive (SCRIPTS.zip).docx",
+    "size_bytes": 171104,
+    "mime": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "sha256": "6922915791df1e47694eea1a8bfb816d9cd84d72b57b7c3143add671493546ec",
+    "modified_iso": "2025-10-04T13:12:34.548789"
+  },
+  {
+    "path": "/mnt/data/2 (2).txt",
+    "name": "2 (2).txt",
+    "size_bytes": 399969,
+    "mime": "text/plain",
+    "sha256": "c0fc109f7e130021008a082699d73803edf68265e693acdc8b0a38e351675347",
+    "modified_iso": "2025-10-04T13:12:34.353489"
+  },
+  {
+    "path": "/mnt/data/2.txt",
+    "name": "2.txt",
+    "size_bytes": 69376,
+    "mime": "text/plain",
+    "sha256": "88e6c73cc8b863d4a0c0dfcd29c8ff3f3d4f961f9b475c61b83c97178d06544d",
+    "modified_iso": "2025-10-04T13:12:34.463621"
+  },
+  {
+    "path": "/mnt/data/8-16-2025.txt",
+    "name": "8-16-2025.txt",
+    "size_bytes": 3261496,
+    "mime": "text/plain",
+    "sha256": "628b5b02d2ce5ec2d23f184a83fb0bd56153576c034dec7723b8c08d19cb73c8",
+    "modified_iso": "2025-10-04T13:12:34.678313"
+  },
+  {
+    "path": "/mnt/data/3 (2).txt",
+    "name": "3 (2).txt",
+    "size_bytes": 697742,
+    "mime": "text/plain",
+    "sha256": "45651f6b7a4c05ef5868996e7257cfcd69a80a428538402d5e566fbf07a14c61",
+    "modified_iso": "2025-10-04T13:12:34.654169"
+  },
+  {
+    "path": "/mnt/data/1 (2).txt",
+    "name": "1 (2).txt",
+    "size_bytes": 20712,
+    "mime": "text/plain",
+    "sha256": "df78909030caed0866ad6f17ecec97c2cb0b97b4a4f4324669985a35f0eee42f",
+    "modified_iso": "2025-10-04T13:12:34.548809"
+  },
+  {
+    "path": "/mnt/data/3.txt",
+    "name": "3.txt",
+    "size_bytes": 17043,
+    "mime": "text/plain",
+    "sha256": "91da16073de96628d57532df8802ea7f7b732b1073739f237c0459abcbd5d95d",
+    "modified_iso": "2025-10-04T13:12:34.562916"
+  },
+  {
+    "path": "/mnt/data/4 (2).txt",
+    "name": "4 (2).txt",
+    "size_bytes": 296669,
+    "mime": "text/plain",
+    "sha256": "bd5990dbcf00bd022cf75abc9d2e81817b909889391919a0993f37e0aeb425db",
+    "modified_iso": "2025-10-04T13:12:34.657823"
+  },
+  {
+    "path": "/mnt/data/1.txt",
+    "name": "1.txt",
+    "size_bytes": 32507,
+    "mime": "text/plain",
+    "sha256": "21ea4c319f2268ab9b85a196b2a53cc4f22b6276e09f8b17789bd26a7be8f1f1",
+    "modified_iso": "2025-10-04T13:12:34.563297"
+  },
+  {
+    "path": "/mnt/data/4.txt",
+    "name": "4.txt",
+    "size_bytes": 291140,
+    "mime": "text/plain",
+    "sha256": "0e67bd6f6139ea8fba405b5346e7031fd8716c65a04e1c10806642ed4a96da3b",
+    "modified_iso": "2025-10-04T13:12:34.706351"
+  },
+  {
+    "path": "/mnt/data/5 (2).txt",
+    "name": "5 (2).txt",
+    "size_bytes": 277571,
+    "mime": "text/plain",
+    "sha256": "c28217dd64e07f7211dc0635c7d606285fa6f33b13cd688eafc21aff6eacd89a",
+    "modified_iso": "2025-10-04T13:12:34.949437"
+  },
+  {
+    "path": "/mnt/data/GhostLink_Final_Project.pdf",
+    "name": "GhostLink_Final_Project.pdf",
+    "size_bytes": 63410,
+    "mime": "application/pdf",
+    "sha256": "69e00c03f332fc9bba50c89497c6f0adc3aa7bb134db781dec041611f1f99fe7",
+    "modified_iso": "2025-10-04T13:12:34.955067"
+  },
+  {
+    "path": "/mnt/data/GhostLink_PoR_Run.pdf",
+    "name": "GhostLink_PoR_Run.pdf",
+    "size_bytes": 85269,
+    "mime": "application/pdf",
+    "sha256": "90cf62b8031bd32e9be5d4d7f579030662228bb701e55a8541c21e3ac501fc67",
+    "modified_iso": "2025-10-04T13:12:34.957965"
+  },
+  {
+    "path": "/mnt/data/repos.zip",
+    "name": "repos.zip",
+    "size_bytes": 79215480,
+    "mime": "application/zip",
+    "sha256": "b82a9ffae40bbd33834f56329fb25e5de092547e14f6e1ef4386aa7e223dfd41",
+    "modified_iso": "2025-10-04T13:12:36.431505"
+  },
+  {
+    "path": "/mnt/data/ghostlink_metrics.csv",
+    "name": "ghostlink_metrics.csv",
+    "size_bytes": 888,
+    "mime": "text/csv",
+    "sha256": "4ae19ca9e422dc472f8304e417d8a2b23b757f3f2c68e016d36f8ed2568f1adb",
+    "modified_iso": "2025-10-04T13:12:35.058689"
+  },
+  {
+    "path": "/mnt/data/GhostLink_Pro_Run_Outputs.zip",
+    "name": "GhostLink_Pro_Run_Outputs.zip",
+    "size_bytes": 79782,
+    "mime": "application/zip",
+    "sha256": "c793c42419b166641975a46733d2b544b6b2ebfff0bdb8fbca0f99559b3d15c6",
+    "modified_iso": "2025-10-04T13:12:35.058997"
+  },
+  {
+    "path": "/mnt/data/GhostLink_Plateau_Report_Fast.pdf",
+    "name": "GhostLink_Plateau_Report_Fast.pdf",
+    "size_bytes": 37297,
+    "mime": "application/pdf",
+    "sha256": "35fc925fe61ff987ec57aabaa587075ab44ee600006b3d0dbcbb2812c1262dcb",
+    "modified_iso": "2025-10-04T13:12:35.148775"
+  },
+  {
+    "path": "/mnt/data/plateau_metrics.csv",
+    "name": "plateau_metrics.csv",
+    "size_bytes": 290,
+    "mime": "text/csv",
+    "sha256": "fbc67871a8b2aac28122603db3913a6529bc0cda2bdd4eb16306ce5f95d960b3",
+    "modified_iso": "2025-10-04T13:12:35.161925"
+  },
+  {
+    "path": "/mnt/data/ghostlink_full_suite.tgz",
+    "name": "ghostlink_full_suite.tgz",
+    "size_bytes": 48523,
+    "mime": "application/x-tar",
+    "sha256": "510092deb436b29fc706e4a769bafe824a3ef50f47fda1ebeaf8617fb37587f2",
+    "modified_iso": "2025-10-04T13:12:35.302298"
+  },
+  {
+    "path": "/mnt/data/GhostLink_Plateau_Fast_Outputs.zip",
+    "name": "GhostLink_Plateau_Fast_Outputs.zip",
+    "size_bytes": 38707,
+    "mime": "application/zip",
+    "sha256": "be0aebd4c4015f2974b80a7519c14743dcf465f8df998e70bc3ce1445eca12da",
+    "modified_iso": "2025-10-04T13:12:35.275304"
+  }
+]

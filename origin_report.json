@@ -1,0 +1,22 @@
+{
+  "reports": [
+    {
+      "cut_fraction": 0.5,
+      "t_sink": 5,
+      "C_sink": 0.7505527565366589,
+      "C_counterfactual": 0.6909762888804932
+    },
+    {
+      "cut_fraction": 0.5,
+      "t_sink": 7,
+      "C_sink": 0.7520125737597972,
+      "C_counterfactual": 0.691101388974141
+    },
+    {
+      "cut_fraction": 0.75,
+      "t_sink": 3,
+      "C_sink": 0.7849461344157733,
+      "C_counterfactual": 0.6715136508092113
+    }
+  ]
+}

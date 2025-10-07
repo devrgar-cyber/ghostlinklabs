@@ -1,0 +1,194 @@
+{
+  "version": "0.1",
+  "source_file": "ghostlink_system_map.gltf",
+  "asset": {
+    "format": "glTF 2.0",
+    "generator": "GhostLink System Shell",
+    "file_size_bytes": 659,
+    "sha256": "2a232d277fc3450c2a05e5c62bccf2b51597feaaf9f92aa7b1e1229a6eae777e",
+    "extras": {
+      "seed_sha256": "69e00c03f332fc9bba50c89497c6f0adc3aa7bb134db781dec041611f1f99fe7",
+      "metrics": {
+        "coherence": 0.4135749349254176,
+        "pain": 0.7277951586509308,
+        "entropy": 0.7643201167710297,
+        "activity": 0.9219373506366311
+      },
+      "ts": "2025-10-04 04:31:34"
+    }
+  },
+  "nodes": [
+    {
+      "id": "kernel",
+      "role": "core orchestrator",
+      "responsibilities": [
+        "Bootstrap from PoR; construct/validate runtime graph",
+        "Maintain capability registry (tools, agents, transports)",
+        "Compile intents via IR; submit runnable jobs to ORDER",
+        "Aggregate telemetry; apply backpressure when thresholds breach"
+      ],
+      "inputs": [
+        "init.seed",
+        "ir.artifact",
+        "order.grant"
+      ],
+      "outputs": [
+        "compile.request",
+        "schedule.request",
+        "telemetry.emit"
+      ],
+      "state": [
+        "capability_graph",
+        "run_queue",
+        "policy_cache",
+        "health_ledger"
+      ]
+    },
+    {
+      "id": "IR",
+      "role": "intermediate representation (intent parser/optimizer)",
+      "responsibilities": [
+        "Parse intents and build typed IR",
+        "Validate capability bindings; surface missing edges",
+        "Emit executable artifacts and validators; maintain provenance"
+      ],
+      "inputs": [
+        "compile.request",
+        "policy.signal"
+      ],
+      "outputs": [
+        "ir.artifact",
+        "ir.validate.events"
+      ],
+      "state": [
+        "type_system",
+        "schema_registry",
+        "optimizer_settings"
+      ]
+    },
+    {
+      "id": "ORDER",
+      "role": "policy & routing plane",
+      "responsibilities": [
+        "Rate-limit & prioritize per policy",
+        "Allocate slots/quotas; coordinate concurrency domains",
+        "Emit policy signals to IR (cost ceilings, safety constraints)",
+        "Fuse telemetry feedback into scheduling"
+      ],
+      "inputs": [
+        "schedule.request",
+        "telemetry.bus"
+      ],
+      "outputs": [
+        "order.grant",
+        "policy.signal",
+        "order.events"
+      ],
+      "state": [
+        "policy_table",
+        "token_buckets",
+        "budgets",
+        "guardrail_rules"
+      ]
+    },
+    {
+      "id": "PoR",
+      "role": "power-on reset / proof-of-resource (boot attestation)",
+      "responsibilities": [
+        "Produce init.seed (matches extras.seed_sha256)",
+        "Host sanity (clock, entropy, storage)",
+        "Emit initial telemetry snapshot"
+      ],
+      "inputs": [
+        "host.signals"
+      ],
+      "outputs": [
+        "init.seed",
+        "por.health"
+      ],
+      "state": [
+        "last_good_seed",
+        "host_fingerprint",
+        "boot_counters"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "PoR",
+      "to": "kernel",
+      "type": "init",
+      "payload": [
+        "seed_sha256",
+        "ts"
+      ]
+    },
+    {
+      "from": "kernel",
+      "to": "IR",
+      "type": "compile.request",
+      "payload": [
+        "intent",
+        "context",
+        "caps"
+      ]
+    },
+    {
+      "from": "IR",
+      "to": "kernel",
+      "type": "ir.artifact",
+      "payload": [
+        "plan",
+        "validators",
+        "provenance"
+      ]
+    },
+    {
+      "from": "kernel",
+      "to": "ORDER",
+      "type": "schedule.request",
+      "payload": [
+        "plan_id",
+        "cost",
+        "class"
+      ]
+    },
+    {
+      "from": "ORDER",
+      "to": "kernel",
+      "type": "order.grant",
+      "payload": [
+        "slots",
+        "budgets",
+        "ttl"
+      ]
+    },
+    {
+      "from": "ORDER",
+      "to": "IR",
+      "type": "policy.signal",
+      "payload": [
+        "ceilings",
+        "guardrails",
+        "hints"
+      ],
+      "bidirectional": true
+    }
+  ],
+  "telemetry": {
+    "channels": [
+      "metrics",
+      "events"
+    ],
+    "schema": {
+      "coherence": "float",
+      "pain": "float",
+      "entropy": "float",
+      "activity": "float"
+    }
+  },
+  "assumptions": [
+    "'IR' interpreted as Intermediate Representation",
+    "'PoR' ambiguous between Power-on Reset and Proof-of-Resource; hybridized role used"
+  ]
+}

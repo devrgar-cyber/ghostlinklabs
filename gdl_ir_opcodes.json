@@ -1,0 +1,92 @@
+[
+  {
+    "opcode": "0x01",
+    "name": "BUILD_DELTA",
+    "args": "prev,state \u2192 mask",
+    "effect": "diff + neighbor halo (active set \u0394_t)"
+  },
+  {
+    "opcode": "0x02",
+    "name": "NB_REDUCE",
+    "args": "state,topo \u2192 COH,PAIN,H",
+    "effect": "neighbor reductions"
+  },
+  {
+    "opcode": "0x03",
+    "name": "SELF_ENC",
+    "args": "fields \u2192 SELF[k]",
+    "effect": "encode global summary s(t)"
+  },
+  {
+    "opcode": "0x04",
+    "name": "ENERGY",
+    "args": "fields,SELF \u2192 E\u03a3,EScar,EComp",
+    "effect": "affine energies + self-channel"
+  },
+  {
+    "opcode": "0x05",
+    "name": "SOFTMAX",
+    "args": "E-triple \u2192 P-triple",
+    "effect": "stable softmax"
+  },
+  {
+    "opcode": "0x06",
+    "name": "SAMPLE_CAT",
+    "args": "P-triple,rng \u2192 pick",
+    "effect": "categorical sample per active cell"
+  },
+  {
+    "opcode": "0x07",
+    "name": "WRITE_STATE",
+    "args": "pick \u2192 state",
+    "effect": "\u0394\u2192{\u03a3,SCAR,COMPOST} commit"
+  },
+  {
+    "opcode": "0x08",
+    "name": "RECYCLE",
+    "args": "fields,rng \u2192 flips",
+    "effect": "COMPOST\u2192\u0394 Bernoulli"
+  },
+  {
+    "opcode": "0x09",
+    "name": "TRACE_DECAY",
+    "args": "\u03c1,\u03ba,\u03bb \u2192 \u03c1,\u03ba",
+    "effect": "EMA decay"
+  },
+  {
+    "opcode": "0x0A",
+    "name": "TRACE_ACCUM",
+    "args": "state \u2192 \u03c1+,\u03ba+",
+    "effect": "accumulate hits"
+  },
+  {
+    "opcode": "0x0B",
+    "name": "SCHED_UPDATE",
+    "args": "stats \u2192 \u03c9",
+    "effect": "update scheduler weights"
+  },
+  {
+    "opcode": "0x0C",
+    "name": "ORDER_APPLY",
+    "args": "\u03c9 \u2192 perm",
+    "effect": "apply operator order"
+  },
+  {
+    "opcode": "0x0D",
+    "name": "LOG_EVENTS",
+    "args": "state,ids \u2192 log",
+    "effect": "append legacy events"
+  },
+  {
+    "opcode": "0x0E",
+    "name": "RNG_SPLIT",
+    "args": "rng \u2192 rng'",
+    "effect": "deterministic per-cell split"
+  },
+  {
+    "opcode": "0x0F",
+    "name": "MASK_FILTER",
+    "args": "mask,cond \u2192 mask'",
+    "effect": "refine active set"
+  }
+]

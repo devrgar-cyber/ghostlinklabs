@@ -1,0 +1,32 @@
+services:
+  ghostlink:
+    build: .
+    container_name: ghostlink
+    restart: unless-stopped
+    environment:
+      # Controller bind ip (inside container). Use 127.0.0.1 with host networking; otherwise 0.0.0.0
+      - HOST=127.0.0.1
+      # Toggle processes
+      - RUN_CONTROLLER=1
+      - RUN_PEER=0          # set to 1 to read sensors (mount /sys below)
+      - RUN_BRIDGE=0        # set to 1 and provide OPENAI_API_KEY
+      # OpenAI (only if RUN_BRIDGE=1)
+      # - OPENAI_API_KEY=sk-...
+      # TLS (mTLS) optional: mount certs and set env if not using defaults
+      # - GL_TLS_CERT=/run/ghostlink/ctl.crt
+      # - GL_TLS_KEY=/run/ghostlink/ctl.key
+      # - GL_TLS_CA=/run/ghostlink/ca.crt
+    # Use host networking for simplest loopback bindings and metrics access
+    network_mode: host
+    # If not using host networking, comment the above and uncomment ports:
+    # ports:
+    #   - "7420:7420"
+    #   - "7422:7422"
+    #   - "9108:9108"
+    volumes:
+      # Optional: mount sensors from host into container (read-only)
+      - /sys/class/thermal:/sys/class/thermal:ro
+      # Optional: mount TLS creds directory
+      - ./creds:/run/ghostlink:ro
+    # Security: run as the non-root UID created in Dockerfile
+    user: "10001:10001"

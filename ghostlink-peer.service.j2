@@ -1,0 +1,24 @@
+[Unit]
+Description=GhostLink Peer (real sensors → controller)
+After=network-online.target ghostlink-controller.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ghostlink
+Group=ghostlink
+EnvironmentFile=/etc/default/ghostlink
+WorkingDirectory=/opt/ghostlink
+ExecStart=/usr/bin/python3 /opt/ghostlink/gl_peer.py
+Restart=on-failure
+NoNewPrivileges=yes
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=true
+
+[Install]
+WantedBy=multi-user.target

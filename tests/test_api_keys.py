@@ -1,9 +1,15 @@
 import datetime
+import os
+import sys
+
 import pytest
 from fastapi.testclient import TestClient
 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from ghostlink.main import app, set_db
-from ghostlink.database import Database, ApiKey
+from ghostlink.database import Database, ApiKey, utc_now
+from ghostlink.config import config
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -43,7 +49,7 @@ class TestApiKeyManagement:
         }
         response = client.post("/api_keys", json=payload)
         assert response.status_code == 200
-        
+
         data = response.json()
         assert data["user_id"] == "test_user"
         assert data["permissions"] == "read,write"
@@ -51,10 +57,42 @@ class TestApiKeyManagement:
         assert len(data["key"]) > 20  # Token should be substantial length
         assert "id" in data
         assert "created_at" in data
-    
+        assert data["expires_at"] is not None
+
+    def test_default_expiration_applied_and_honored(self):
+        """Test that default expiration is set and validated when not provided."""
+        payload = {
+            "user_id": "default_expiry_user",
+            "permissions": "read, write",
+        }
+        response = client.post("/api_keys", json=payload)
+        assert response.status_code == 200
+
+        data = response.json()
+        assert data["expires_at"] is not None
+
+        expires_at = datetime.datetime.fromisoformat(data["expires_at"])
+        expected_expiry = utc_now() + datetime.timedelta(days=config.API_KEY_EXPIRATION_DAYS)
+        # Allow a small delta for processing time differences
+        assert abs((expires_at - expected_expiry).total_seconds()) < 10
+
+        validation_response = client.get("/api_keys/validate", headers={"X-API-Key": data["key"]})
+        assert validation_response.status_code == 200
+
+    def test_database_layer_applies_default_expiration(self):
+        """Ensure the database helper applies the default expiration policy."""
+        db = Database("sqlite:///:memory:")
+        try:
+            created_key = db.create_api_key(user_id="db_default_user", permissions="read")
+
+            assert created_key.expires_at is not None
+            expected_expiry = utc_now() + datetime.timedelta(days=config.API_KEY_EXPIRATION_DAYS)
+            assert abs((created_key.expires_at - expected_expiry).total_seconds()) < 10
+        finally:
+            db.engine.dispose()
+
     def test_create_api_key_with_expiration(self):
         """Test creating an API key with expiration date."""
-        from ghostlink.database import utc_now
         future_date = (utc_now() + datetime.timedelta(days=30)).isoformat()
         payload = {
             "user_id": "test_user",
@@ -200,15 +238,21 @@ class TestApiKeyPermissions:
     def test_api_key_has_permission(self):
         """Test the has_permission method."""
         api_key = ApiKey(permissions="read,write")
-        
+
         assert api_key.has_permission("read") is True
         assert api_key.has_permission("write") is True
         assert api_key.has_permission("admin") is False
-        
+
+        # Test permissions with spaces around commas
+        spaced_permissions_key = ApiKey(permissions="read, write, admin")
+        assert spaced_permissions_key.has_permission("read") is True
+        assert spaced_permissions_key.has_permission("write") is True
+        assert spaced_permissions_key.has_permission("admin") is True
+
         # Test empty permissions
         empty_key = ApiKey(permissions="")
         assert empty_key.has_permission("read") is False
-        
+
         # Test None permissions
         none_key = ApiKey(permissions=None)
         assert none_key.has_permission("read") is False

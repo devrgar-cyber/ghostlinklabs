@@ -1,0 +1,75 @@
+---
+- name: Ensure ghostlink user
+  user: name=ghostlink system=yes create_home=yes shell=/usr/sbin/nologin
+
+- name: Install Python and deps
+  package:
+    name: "{{ item }}"
+    state: present
+  loop: ["python3","python3-pip"]
+
+- name: Pip deps
+  pip:
+    name:
+      - prometheus_client
+      - psutil
+      - requests
+
+- name: Create app dir
+  file: path=/opt/ghostlink state=directory owner=ghostlink group=ghostlink mode=0755
+
+- name: Deploy controller (env-configurable)
+  copy:
+    src: gl_controller_metrics_env.py
+    dest: /opt/ghostlink/gl_controller_metrics.py
+    owner: ghostlink
+    group: ghostlink
+    mode: 0755
+
+- name: Deploy peer
+  copy:
+    src: gl_peer.py
+    dest: /opt/ghostlink/gl_peer.py
+    owner: ghostlink
+    group: ghostlink
+    mode: 0755
+
+- name: Deploy bridge
+  copy:
+    src: gl_openai_bridge.py
+    dest: /opt/ghostlink/gl_openai_bridge.py
+    owner: ghostlink
+    group: ghostlink
+    mode: 0755
+
+- name: Install env file
+  template:
+    src: ghostlink.env.j2
+    dest: /etc/default/ghostlink
+    owner: root
+    group: ghostlink
+    mode: 0640
+
+- name: Install systemd units
+  template:
+    src: "{{ item.src }}"
+    dest: "/etc/systemd/system/{{ item.dest }}"
+    owner: root
+    group: root
+    mode: 0644
+  loop:
+    - { src: "ghostlink-controller.service.j2", dest: "ghostlink-controller.service" }
+    - { src: "ghostlink-peer.service.j2",       dest: "ghostlink-peer.service" }
+    - { src: "ghostlink-bridge.service.j2",     dest: "ghostlink-bridge.service" }
+
+- name: systemd reload
+  systemd: daemon_reload=yes
+
+- name: Enable & start services (controller + peer)
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+  loop:
+    - ghostlink-controller.service
+    - ghostlink-peer.service
