@@ -22,6 +22,8 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple, Any
+import sys
+import time
 import importlib.util
 import logging
 import re
@@ -900,6 +902,162 @@ def render_connector_isometric(
         lines.append(f"  {plabel}: {color_str:<10} - {pin.function or ''}")
 
     return "\n".join(lines)
+
+
+def render_connector_3d_dynamic(
+    conn: Connector,
+    legend: Dict[str, str],
+    duration: int = 10,
+) -> None:
+    """
+    Animate a rotating 3D projection of the connector in the terminal.
+
+    This favors ANSI block colors for pins and asterisks for the connector
+    housing. It runs for ``duration`` seconds at ~15 FPS and clears the
+    viewport afterward. Geometry and pins must be present or the function
+    will exit early with a short notice.
+    """
+
+    if not conn.geometry or not conn.pins:
+        print("No geometry or pins available for 3D rendering.")
+        return
+
+    color_map: Dict[str, Tuple[str, str]] = {
+        "RD": ("101", "30"),  # red bg, black text
+        "BK": ("100", "97"),  # black bg, white text
+        "GN": ("102", "30"),  # green bg, black text
+        "YE": ("103", "30"),  # yellow bg, black text
+        "WH": ("107", "30"),  # white bg, black text
+    }
+
+    # Ensure legend colors at least map to a neutral background if not predefined.
+    for code in legend:
+        color_map.setdefault(code, ("47", "30"))
+
+    def get_ansi(color_code: Optional[str]) -> str:
+        bg, fg = color_map.get(color_code, color_map["BK"])
+        return f"\033[{bg}m\033[{fg}m"
+
+    def get_row_col(label: str) -> Tuple[int, int]:
+        if label[0].isalpha():
+            row = ord(label[0].upper()) - ord("A")
+            col = int(label[1:]) - 1
+        else:
+            row = 0
+            col = int(label) - 1
+        return row, col
+
+    rows = max(get_row_col(l)[0] for l in conn.pins) + 1
+    cols = max(get_row_col(l)[1] for l in conn.pins) + 1
+    spacing = 1.0
+
+    pins_3d: List[Tuple[float, float, float, str]] = []
+    x_vals: List[float] = []
+    y_vals: List[float] = []
+    for label, pin in conn.pins.items():
+        row, col = get_row_col(label)
+        x = col * spacing - (cols - 1) * spacing / 2
+        y = -row * spacing
+        z = 0.0
+        ansi = get_ansi(pin.color_primary)
+        char = ansi + "█" + "\033[0m"
+        pins_3d.append((x, y, z, char))
+        x_vals.append(x)
+        y_vals.append(y)
+
+    margin = 0.5
+    x_min = min(x_vals) - margin
+    x_max = max(x_vals) + margin
+    y_min = min(y_vals) - margin
+    y_max = max(y_vals) + margin
+    z_front = 0.5
+    z_back = -0.5
+    housing_vertices: List[Tuple[float, float, float]] = [
+        (x_min, y_min, z_front),
+        (x_max, y_min, z_front),
+        (x_max, y_max, z_front),
+        (x_min, y_max, z_front),
+        (x_min, y_min, z_back),
+        (x_max, y_min, z_back),
+        (x_max, y_max, z_back),
+        (x_min, y_max, z_back),
+    ]
+    housing_edges = [
+        (0, 1),
+        (1, 2),
+        (2, 3),
+        (3, 0),
+        (4, 5),
+        (5, 6),
+        (6, 7),
+        (7, 4),
+        (0, 4),
+        (1, 5),
+        (2, 6),
+        (3, 7),
+    ]
+    housing_char = "\033[90m*\033[0m"
+
+    w, h = 80, 24
+    out = sys.stdout
+    s = 0.1
+    c = (1 - s ** 2) ** 0.5
+    ym = h / 3.0
+    xm = 2 * ym
+    z_offset = 3.0
+
+    start_time = time.time()
+    while time.time() - start_time < duration:
+        housing_rot = [(c * x + s * z, y, -s * x + c * z) for x, y, z in housing_vertices]
+        pins_rot = [(c * x + s * z, y, -s * x + c * z, ch) for x, y, z, ch in pins_3d]
+
+        proj_h = [
+            (
+                round(w / 2 + xm * x / (z + z_offset)),
+                round(h / 2 + ym * y / (z + z_offset)),
+            )
+            for x, y, z in housing_rot
+        ]
+        proj_p = [
+            (
+                round(w / 2 + xm * x / (z + z_offset)),
+                round(h / 2 + ym * y / (z + z_offset)),
+                ch,
+            )
+            for x, y, z, ch in pins_rot
+        ]
+
+        from collections import defaultdict
+
+        screen: "defaultdict[Tuple[int, int], str]" = defaultdict(lambda: " ")
+
+        for edge in housing_edges:
+            start = proj_h[edge[0]]
+            end = proj_h[edge[1]]
+            dx = end[0] - start[0]
+            dy = end[1] - start[1]
+            steps = max(abs(dx), abs(dy), 1)
+            for i in range(steps + 1):
+                px = start[0] + round(i * dx / steps)
+                py = start[1] + round(i * dy / steps)
+                if 0 <= px < w and 0 <= py < h:
+                    screen[(px, py)] = housing_char
+
+        for px, py, ch in proj_p:
+            if 0 <= px < w and 0 <= py < h:
+                screen[(px, py)] = ch
+
+        lines: List[str] = []
+        for y in range(h):
+            line = "".join(screen[(x, y)] for x in range(w))
+            lines.append(line)
+
+        out.write("\033[H" + "\n".join(lines))
+        out.flush()
+        time.sleep(1 / 15.0)
+
+    out.write("\033[H" + (" " * w + "\n") * h)
+    out.flush()
 
 
 def create_pdf_overlays(pdf_path: str, doc: GLHDocument, out_path: str) -> None:
