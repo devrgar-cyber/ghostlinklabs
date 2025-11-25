@@ -22,6 +22,7 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple, Any
+import argparse
 import sys
 import time
 import importlib.util
@@ -1166,8 +1167,26 @@ def process_pdf_to_harness(pdf_path: str, glh_seed_text: str = "") -> GLHDocumen
 
 
 if __name__ == "__main__":
-    # Example usage (replace with your actual PIU PDF path):
-    pdf_path = Path("2026-Explorer-PIU-Police-Modifier-Guide_20250702_Final (1).pdf")
+    parser = argparse.ArgumentParser(description="GLH demo runner")
+    parser.add_argument(
+        "--pdf",
+        type=Path,
+        default=Path("2026-Explorer-PIU-Police-Modifier-Guide_20250702_Final (1).pdf"),
+        help="Optional PIU PDF to ingest (defaults to local sample name)",
+    )
+    parser.add_argument(
+        "--animate",
+        type=int,
+        default=0,
+        metavar="SECONDS",
+        help="Duration to show the rotating 3D view (0 disables animation)",
+    )
+    parser.add_argument(
+        "--no-iso",
+        action="store_true",
+        help="Skip the static isometric render",
+    )
+    args = parser.parse_args()
 
     # Minimal GLH seed example:
     glh_seed = """
@@ -1198,15 +1217,14 @@ B4: BK, Spare ground
 
 """
 
-    pdf_ready = pdf_path.exists() and _pdfplumber_available()
+    pdf_ready = args.pdf.exists() and _pdfplumber_available()
 
     if pdf_ready:
-        # Build doc from both PDF + DSL
-        doc = process_pdf_to_harness(str(pdf_path), glh_seed)
+        doc = process_pdf_to_harness(str(args.pdf), glh_seed)
     else:
         reason_bits = []
-        if not pdf_path.exists():
-            reason_bits.append(f"missing file: {pdf_path}")
+        if not args.pdf.exists():
+            reason_bits.append(f"missing file: {args.pdf}")
         if not _pdfplumber_available():
             reason_bits.append("pdfplumber not installed")
 
@@ -1216,14 +1234,21 @@ B4: BK, Spare ground
         )
         doc = parse_glh_blocks(glh_seed)
 
-    # Example: render one connector ASCII
     if "C2001" in doc.connectors:
         ascii_art = render_connector_ascii(doc.connectors["C2001"], doc.legend)
         print(ascii_art)
 
-        iso_art = render_connector_isometric(
-            doc.connectors["C2001"], doc.legend, use_ansi_colors=True
-        )
-        print(iso_art)
+        if not args.no_iso:
+            iso_art = render_connector_isometric(
+                doc.connectors["C2001"], doc.legend, use_ansi_colors=True
+            )
+            print(iso_art)
+
+        if args.animate > 0 and sys.stdout.isatty():
+            render_connector_3d_dynamic(
+                doc.connectors["C2001"], doc.legend, duration=args.animate
+            )
+        elif args.animate > 0:
+            log.info("Animation requested but stdout is not a TTY; skipping animation.")
     else:
         print("Connector C2001 not found yet.")
