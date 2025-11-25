@@ -909,12 +909,16 @@ id=C2001
 description: Front bumper harness upfit connector
 location: Front bumper LH
 rows: 2
-cols: 7
+cols: 4
 
 A1: RD/WH, Fog lamp feed
 A2: BK, Ground
-B1: GN, Micron grill flasher +
-B2: BK/WH, Micron grill flasher -
+A3: GN, Micron grill flasher +
+A4: BK/WH, Micron grill flasher -
+B1: YE, Spare feed 1
+B2: WH, Spare feed 2
+B3: RD, Spare feed 3
+B4: BK, Spare ground
 ```
 
 """
