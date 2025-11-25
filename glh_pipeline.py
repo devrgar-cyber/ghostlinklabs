@@ -20,9 +20,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum, auto
+from pathlib import Path
 from typing import List, Dict, Optional, Tuple, Any
-import re
+import importlib.util
 import logging
+import re
 
 # Optional libs (install when you’re ready):
 # pdfplumber, fitz (PyMuPDF), networkx, z3-solver, opencv-python, pytesseract
@@ -432,6 +434,10 @@ CONNECTOR_ID_RE = re.compile(r"\bC\d{3,4}\b")
 CAP_ID_RE = re.compile(r"\bCAP\d+\b")
 
 
+def _pdfplumber_available() -> bool:
+    return importlib.util.find_spec("pdfplumber") is not None
+
+
 @dataclass
 class PDFTextBlock:
     page: int
@@ -454,6 +460,9 @@ def extract_text_blocks_from_pdf(pdf_path: str) -> List[PDFTextBlock]:
     Install:
         pip install pdfplumber
     """
+    if not _pdfplumber_available():
+        raise ImportError("pdfplumber is required for PDF ingestion. Install it to enable extract_text_blocks_from_pdf().")
+
     import pdfplumber  # type: ignore
 
     blocks: List[PDFTextBlock] = []
@@ -883,7 +892,7 @@ def process_pdf_to_harness(pdf_path: str, glh_seed_text: str = "") -> GLHDocumen
 
 if __name__ == "__main__":
     # Example usage (replace with your actual PIU PDF path):
-    pdf_path = "2026-Explorer-PIU-Police-Modifier-Guide_20250702_Final (1).pdf"
+    pdf_path = Path("2026-Explorer-PIU-Police-Modifier-Guide_20250702_Final (1).pdf")
 
     # Minimal GLH seed example:
     glh_seed = """
@@ -910,8 +919,23 @@ B2: BK/WH, Micron grill flasher -
 
 """
 
-    # Build doc from both PDF + DSL
-    doc = process_pdf_to_harness(pdf_path, glh_seed)
+    pdf_ready = pdf_path.exists() and _pdfplumber_available()
+
+    if pdf_ready:
+        # Build doc from both PDF + DSL
+        doc = process_pdf_to_harness(str(pdf_path), glh_seed)
+    else:
+        reason_bits = []
+        if not pdf_path.exists():
+            reason_bits.append(f"missing file: {pdf_path}")
+        if not _pdfplumber_available():
+            reason_bits.append("pdfplumber not installed")
+
+        log.info(
+            "Skipping PDF ingestion (%s); rendering seed GLH only.",
+            "; ".join(reason_bits) or "PDF unavailable",
+        )
+        doc = parse_glh_blocks(glh_seed)
 
     # Example: render one connector ASCII
     if "C2001" in doc.connectors:
