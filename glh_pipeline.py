@@ -785,6 +785,123 @@ def render_connector_ascii(
     return "\n".join(lines)
 
 
+def render_connector_isometric(
+    conn: Connector,
+    legend: Dict[str, str],
+    *,
+    use_ansi_colors: bool = True,
+) -> str:
+    """
+    Simple 3D-ish rendering of a connector face using ASCII/ANSI blocks.
+
+    This favors clarity over perspective correctness: it offsets the second
+    (and subsequent) rows to imply depth while keeping the same cell shapes
+    as the regular face view. The function honors ``use_ansi_colors`` to make
+    the block fills match the legend colors in capable terminals.
+    """
+
+    if not conn.geometry:
+        return f"Connector {conn.connector_id}: [no geometry]\n"
+
+    _infer_cavities_from_pin_labels(conn)
+
+    g = conn.geometry
+
+    bg_map = {
+        "RD": "\033[101m",
+        "BK": "\033[100m",
+        "GN": "\033[102m",
+        "YE": "\033[103m",
+        "WH": "\033[107m",
+        None: "",
+    }
+    text_color_map = {
+        "RD": "\033[30m",
+        "BK": "\033[97m",
+        "GN": "\033[30m",
+        "YE": "\033[30m",
+        "WH": "\033[30m",
+        None: "\033[0m",
+    }
+
+    def _cell_for_label(label: Optional[str]) -> str:
+        if not label:
+            return "       "
+
+        pin = conn.pins.get(label)
+        if not pin or not use_ansi_colors:
+            return label.center(7)
+
+        bg = bg_map.get(pin.color_primary, "")
+        text_color = text_color_map.get(pin.color_primary, "\033[0m")
+        reset = "\033[0m"
+        return f"{bg}{text_color}{label.center(7)}{reset}"
+
+    def _grid_border(prefix: str = "") -> str:
+        return f"{prefix}+" + "+".join(["-------"] * g.cols) + "+"
+
+    def _grid_row(row_idx: int, prefix: str = "") -> str:
+        cells: List[str] = []
+        for c in range(1, g.cols + 1):
+            label = g.cavities.get((row_idx, c))
+            cells.append(_cell_for_label(label))
+        return f"{prefix}| " + " | ".join(cells) + " |"
+
+    lines: List[str] = [f"Connector {conn.connector_id} — 3D Isometric View"]
+
+    # Top slanted edges to suggest perspective.
+    slant = "/" + "/".join(["-------"] * g.cols) + "/"
+    lines.append(f"    {slant}")
+    lines.append(f"    {slant}")
+
+    # First row (closest face)
+    lines.append(_grid_border())
+    lines.append(_grid_row(1))
+    lines.append(_grid_border())
+
+    # Subsequent rows are offset to the right to imply depth.
+    for row_idx in range(2, g.rows + 1):
+        prefix = "    " * (row_idx - 1)
+        lines.append(f"{prefix}{_grid_border()}")
+        lines.append(f"{prefix}{_grid_row(row_idx)}")
+        lines.append(f"{prefix}{_grid_border()}")
+
+    # Closing slants
+    back_slant = "\\" + "\\".join(["       "] * g.cols) + "\\"
+    lines.append(back_slant)
+    lines.append(back_slant)
+
+    # Legend and pins (colorized if desired)
+    lines.append("")
+    lines.append("Legend:")
+    for code in legend:
+        if use_ansi_colors:
+            bg = bg_map.get(code, "")
+            text_color = text_color_map.get(code, "\033[0m")
+            reset = "\033[0m"
+            lines.append(f"  {bg}{text_color}[  {code:<3} ]{reset} = {code}")
+        else:
+            lines.append(f"  {legend[code]} = {code}")
+
+    lines.append("")
+    lines.append("Pins:")
+    for plabel, pin in sorted(conn.pins.items(), key=lambda x: x[0]):
+        primary = pin.color_primary or "?"
+        secondary = pin.color_secondary
+        if use_ansi_colors:
+            fg_primary = text_color_map.get(primary, "\033[0m")
+            fg_secondary = text_color_map.get(secondary, "\033[0m")
+            reset = "\033[0m"
+            color_str = f"{bg_map.get(primary, '')}{fg_primary}{primary}{reset}"
+            if secondary:
+                color_str += f"/{bg_map.get(secondary, '')}{fg_secondary}{secondary}{reset}"
+        else:
+            color_str = f"{primary}/{secondary}".strip("/")
+        lines.append(f"  {plabel}: {color_str:<10} - {pin.function or ''}")
+
+    return "\n".join(lines)
+
+
 def create_pdf_overlays(pdf_path: str, doc: GLHDocument, out_path: str) -> None:
     """
     Skeleton for PDF overlay generation.
@@ -945,5 +1062,10 @@ B4: BK, Spare ground
     if "C2001" in doc.connectors:
         ascii_art = render_connector_ascii(doc.connectors["C2001"], doc.legend)
         print(ascii_art)
+
+        iso_art = render_connector_isometric(
+            doc.connectors["C2001"], doc.legend, use_ansi_colors=True
+        )
+        print(iso_art)
     else:
         print("Connector C2001 not found yet.")
