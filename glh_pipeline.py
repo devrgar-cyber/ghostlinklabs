@@ -434,7 +434,8 @@ def _parse_void_block(doc: GLHDocument, body: str) -> None:
 # -----------------------------------------------------------------------------
 
 CONNECTOR_ID_RE = re.compile(r"\bC\d{3,4}\b")
-CAP_ID_RE = re.compile(r"\bCAP\d+\b")
+CONNECTOR_ID_FLEX_RE = re.compile(r"\bC[\s-]?(\d{3,4})\b", re.IGNORECASE)
+CAP_ID_RE = re.compile(r"\bCAP[\s-]?(\d+)\b", re.IGNORECASE)
 
 
 def _pdfplumber_available() -> bool:
@@ -446,6 +447,20 @@ class PDFTextBlock:
     page: int
     text: str
     bbox: Tuple[float, float, float, float]  # (x0, y0, x1, y1)
+    granularity: str = "page"  # "page" | "line"
+
+
+@dataclass
+class PDFWord:
+    text: str
+    bbox: Tuple[float, float, float, float]
+
+
+@dataclass
+class PDFLine:
+    text: str
+    bbox: Tuple[float, float, float, float]
+    words: List[PDFWord]
 
 
 @dataclass
@@ -454,17 +469,76 @@ class ConnectorMention:
     page: int
     context: str
     bbox: Optional[Tuple[float, float, float, float]] = None
+    source: str = "page"
+
+
+def _words_to_line(word_dicts: List[Dict[str, Any]]) -> PDFLine:
+    words = [
+        PDFWord(
+            text=w["text"],
+            bbox=(
+                float(w["x0"]),
+                float(w.get("top", 0.0)),
+                float(w["x1"]),
+                float(w.get("bottom", 0.0)),
+            ),
+        )
+        for w in word_dicts
+    ]
+
+    text = " ".join(w.text for w in words)
+    x0 = min(w.bbox[0] for w in words)
+    y0 = min(w.bbox[1] for w in words)
+    x1 = max(w.bbox[2] for w in words)
+    y1 = max(w.bbox[3] for w in words)
+    return PDFLine(text=text, bbox=(x0, y0, x1, y1), words=words)
+
+
+def _group_words_into_lines(words: List[Dict[str, Any]], *, y_tolerance: float = 2.0) -> List[PDFLine]:
+    """Group pdfplumber word dicts into line objects with bounding boxes."""
+
+    if not words:
+        return []
+
+    sorted_words = sorted(words, key=lambda w: (w.get("top", 0.0), w.get("x0", 0.0)))
+    lines: List[PDFLine] = []
+    current: List[Dict[str, Any]] = []
+    current_top: Optional[float] = None
+
+    for word in sorted_words:
+        top = word.get("top", 0.0)
+        if current_top is None or abs(top - current_top) <= y_tolerance:
+            current.append(word)
+            current_top = top if current_top is None else min(current_top, top)
+            continue
+
+        lines.append(_words_to_line(current))
+        current = [word]
+        current_top = top
+
+    if current:
+        lines.append(_words_to_line(current))
+
+    return lines
 
 
 def extract_text_blocks_from_pdf(pdf_path: str) -> List[PDFTextBlock]:
     """
-    Basic text + bbox extraction using pdfplumber.
+    Basic text + bbox extraction using pdfplumber with line-level dissection.
 
-    Install:
-        pip install pdfplumber
+    We return both per-line blocks (higher precision contexts) and per-page
+    fallbacks so downstream connectors still resolve even when word detection
+    is sparse. Raises informative errors when pdfplumber or the target PDF are
+    unavailable.
     """
+    if not Path(pdf_path).exists():
+        raise FileNotFoundError(f"PDF not found: {pdf_path}")
+
     if not _pdfplumber_available():
-        raise ImportError("pdfplumber is required for PDF ingestion. Install it to enable extract_text_blocks_from_pdf().")
+        raise ImportError(
+            "pdfplumber is required for PDF ingestion. Install it to enable "
+            "extract_text_blocks_from_pdf()."
+        )
 
     import pdfplumber  # type: ignore
 
@@ -472,17 +546,38 @@ def extract_text_blocks_from_pdf(pdf_path: str) -> List[PDFTextBlock]:
 
     with pdfplumber.open(pdf_path) as pdf:
         for page_index, page in enumerate(pdf.pages):
-            # using words as smallest building blocks
-            words = page.extract_words()
-            if not words:
-                continue
-            # For now, we join entire page text as one block
-            page_text = page.extract_text() or ""
+            page_number = page_index + 1
+            try:
+                words = page.extract_words() or []
+            except Exception as exc:
+                log.warning("Failed to extract words on page %s: %s", page_number, exc)
+                words = []
+
+            if words:
+                lines = _group_words_into_lines(words)
+                for line in lines:
+                    blocks.append(
+                        PDFTextBlock(
+                            page=page_number,
+                            text=line.text,
+                            bbox=line.bbox,
+                            granularity="line",
+                        )
+                    )
+
+            # Always include a page-level block as a coarse fallback
+            try:
+                page_text = page.extract_text() or ""
+            except Exception as exc:
+                log.warning("Failed to extract text on page %s: %s", page_number, exc)
+                page_text = ""
+
             blocks.append(
                 PDFTextBlock(
-                    page=page_index + 1,
+                    page=page_number,
                     text=page_text,
                     bbox=(0.0, 0.0, float(page.width), float(page.height)),
+                    granularity="page",
                 )
             )
 
@@ -490,35 +585,47 @@ def extract_text_blocks_from_pdf(pdf_path: str) -> List[PDFTextBlock]:
 
 
 def build_connector_index(blocks: List[PDFTextBlock]) -> Dict[str, List[ConnectorMention]]:
-    """
-    Scan all text blocks and collect connector mentions from text.
-    """
+    """Scan PDF text for connector identifiers with flexible spacing/hyphens."""
+
     index: Dict[str, List[ConnectorMention]] = {}
+    seen: set[Tuple[str, int, str, Tuple[float, float, float, float]]] = set()
+
     for block in blocks:
-        # For each connector ID found in the text
-        for m in CONNECTOR_ID_RE.finditer(block.text):
-            connector_id = m.group(0)
-            ctx_start = max(0, m.start() - 40)
-            ctx_end = min(len(block.text), m.end() + 40)
-            context = block.text[ctx_start:ctx_end]
+        text = block.text or ""
+
+        for m in CONNECTOR_ID_FLEX_RE.finditer(text):
+            connector_id = f"C{m.group(1)}"
+            ctx_start = max(0, m.start() - 80)
+            ctx_end = min(len(text), m.end() + 80)
+            context = text[ctx_start:ctx_end]
+            key = (connector_id, block.page, context, block.bbox)
+            if key in seen:
+                continue
+            seen.add(key)
             mention = ConnectorMention(
                 connector_id=connector_id,
                 page=block.page,
                 context=context,
                 bbox=block.bbox,
+                source=block.granularity,
             )
             index.setdefault(connector_id, []).append(mention)
 
-        for m in CAP_ID_RE.finditer(block.text):
-            cap_id = m.group(0)
-            ctx_start = max(0, m.start() - 40)
-            ctx_end = min(len(block.text), m.end() + 40)
-            context = block.text[ctx_start:ctx_end]
+        for m in CAP_ID_RE.finditer(text):
+            cap_id = f"CAP{m.group(1)}"
+            ctx_start = max(0, m.start() - 80)
+            ctx_end = min(len(text), m.end() + 80)
+            context = text[ctx_start:ctx_end]
+            key = (cap_id, block.page, context, block.bbox)
+            if key in seen:
+                continue
+            seen.add(key)
             mention = ConnectorMention(
                 connector_id=cap_id,
                 page=block.page,
                 context=context,
                 bbox=block.bbox,
+                source=block.granularity,
             )
             index.setdefault(cap_id, []).append(mention)
 
