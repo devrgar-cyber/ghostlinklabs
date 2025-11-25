@@ -660,21 +660,73 @@ class RuleEngine:
 # -----------------------------------------------------------------------------
 
 
-def render_connector_ascii(conn: Connector, legend: Dict[str, str]) -> str:
-    """
-    Geometry-aware ASCII rendering with emoji legend mapping.
+def _infer_cavities_from_pin_labels(conn: Connector) -> None:
+    """Populate geometry cavities + pin row/col using labels like ``A1`` or ``B7``.
 
-    This assumes `conn.geometry` is filled with rows/cols and cavity->label mapping.
+    This is a lightweight helper so we can render without an upstream geometry
+    detector. If the geometry already has cavities, the function is a no-op.
     """
+
+    if not conn.geometry or conn.geometry.cavities:
+        return
+
+    letter_digit = re.compile(r"^([A-Z])(\d+)$")
+    for label, pin in conn.pins.items():
+        match = letter_digit.match(label)
+        if not match:
+            continue
+        row_letter, col_str = match.groups()
+        row = ord(row_letter) - ord("A") + 1
+        col = int(col_str)
+        conn.geometry.cavities[(row, col)] = label
+        pin.row = pin.row or row
+        pin.col = pin.col or col
+
+
+def render_connector_ascii(
+    conn: Connector,
+    legend: Dict[str, str],
+    *,
+    use_ansi_colors: bool = False,
+) -> str:
+    """
+    Geometry-aware ASCII rendering with either emoji legend mapping or ANSI
+    foreground/background blocks.
+
+    ``use_ansi_colors`` is handy when a terminal supports colors but you do not
+    want emoji in the grid. The function falls back to plain text when geometry
+    is missing.
+    """
+
     if not conn.geometry:
         return f"Connector {conn.connector_id}: [no geometry]\n"
+
+    # Populate simple grids if upstream geometry detectors have not done so.
+    _infer_cavities_from_pin_labels(conn)
 
     g = conn.geometry
     lines: List[str] = []
     lines.append(f"Connector {conn.connector_id} — Face View")
-    width = g.cols
 
-    border = "    +" + ("-----------" * width) + "+"
+    if use_ansi_colors:
+        bg_map = {
+            "RD": "\033[101m",
+            "BK": "\033[100m",
+            "GN": "\033[102m",
+            "YE": "\033[103m",
+            "WH": "\033[107m",
+            None: "",
+        }
+        text_color_map = {
+            "RD": "\033[30m",
+            "BK": "\033[97m",
+            "GN": "\033[30m",
+            "YE": "\033[30m",
+            "WH": "\033[30m",
+            None: "\033[0m",
+        }
+
+    border = "    +" + ("-----------" * g.cols) + "+"
     lines.append(border)
     for r in range(1, g.rows + 1):
         row_cells = []
@@ -683,8 +735,16 @@ def render_connector_ascii(conn: Connector, legend: Dict[str, str]) -> str:
             if label and label in conn.pins:
                 pin = conn.pins[label]
                 color_code = pin.color_primary or "??"
-                emoji = legend.get(color_code, "⬜")
-                cell = f"[{emoji}{label}]"
+
+                if use_ansi_colors:
+                    bg = bg_map.get(color_code, "")
+                    text_color = text_color_map.get(color_code, "\033[0m")
+                    reset = "\033[0m"
+                    padded_label = label.center(7)
+                    cell = f"{bg}{text_color}[{padded_label}]{reset}"
+                else:
+                    emoji = legend.get(color_code, "⬜")
+                    cell = f"[{emoji}{label}]"
             elif label:
                 cell = f"[⬜{label}]"
             else:
@@ -696,8 +756,16 @@ def render_connector_ascii(conn: Connector, legend: Dict[str, str]) -> str:
 
     # Legend
     lines.append("Legend:")
-    for code, emo in legend.items():
-        lines.append(f"  {emo} = {code}")
+    if use_ansi_colors:
+        for code in legend:
+            bg = bg_map.get(code, "")
+            text_color = text_color_map.get(code, "\033[0m")
+            reset = "\033[0m"
+            padded_code = code.center(7)
+            lines.append(f"  {bg}{text_color}[{padded_code}]{reset} = {code}")
+    else:
+        for code, emo in legend.items():
+            lines.append(f"  {emo} = {code}")
 
     # Optional pin list
     lines.append("\nPins:")
